@@ -12,7 +12,7 @@ import { Loader2 } from 'lucide-react';
 const Index = () => {
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   
-  const { prayerTimes, hijriDate, isLoading, location } = usePrayerTimes(
+  const { prayerTimes, hijriDate, isLoading, location, nearestLocation } = usePrayerTimes(
     selectedCity?.latitude,
     selectedCity?.longitude
   );
@@ -59,7 +59,7 @@ const Index = () => {
         </div>
 
         <LocationInfo 
-          city={selectedCity?.name || 'Aktueller Standort'} 
+          city={selectedCity?.name || nearestLocation} 
           hijriDate={hijriDate}
         />
 

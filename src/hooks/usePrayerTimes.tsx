@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export const usePrayerTimes = (latitude?: number, longitude?: number) => {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [nearestLocation, setNearestLocation] = useState<string>('');
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -27,6 +28,35 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
 
     getCurrentPosition();
   }, [latitude, longitude]);
+
+  // Fetch nearest location name using reverse geocoding
+  useEffect(() => {
+    const fetchLocationName = async () => {
+      if (!location) return;
+      
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.lat}&lon=${location.lng}&zoom=18&addressdetails=1`
+        );
+        const data = await response.json();
+        
+        // Use the most specific name available
+        const locationName = data.address?.suburb || 
+                           data.address?.city_district || 
+                           data.address?.town || 
+                           data.address?.city || 
+                           data.address?.village || 
+                           'Unbekannter Ort';
+                           
+        setNearestLocation(locationName);
+      } catch (error) {
+        console.error('Error fetching location name:', error);
+        setNearestLocation('Unbekannter Ort');
+      }
+    };
+
+    fetchLocationName();
+  }, [location]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['prayerTimes', location?.lat, location?.lng],
@@ -89,6 +119,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
     hijriDate: data?.hijriDate || '',
     isLoading, 
     error, 
-    location 
+    location,
+    nearestLocation 
   };
 };

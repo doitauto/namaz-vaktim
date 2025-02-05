@@ -30,7 +30,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[url('/lovable-uploads/d913d149-e71c-4a02-939a-76db7c3c928b.png')] bg-cover bg-center px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a1529] to-[#0f2547] px-4 py-8">
       <div className="max-w-lg mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-light tracking-wider text-white/90">
@@ -40,7 +40,7 @@ const Index = () => {
 
         <div className="relative w-full aspect-square">
           <div className="absolute inset-0">
-            <div className="w-full h-full rounded-full bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-sm p-8">
+            <div className="w-full h-full rounded-full bg-white/10 backdrop-blur-sm p-8">
               <div className="relative w-full h-full">
                 {prayerTimes.length > 0 && (
                   <NextPrayerTimer 

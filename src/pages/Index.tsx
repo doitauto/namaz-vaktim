@@ -36,7 +36,7 @@ const Index = () => {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#0EA5E9] rounded-full filter blur-[128px] opacity-20"></div>
       </div>
 
-      <div className="max-w-3xl mx-auto space-y-8 relative z-10">
+      <div className="max-w-4xl mx-auto space-y-8 relative z-10">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-light tracking-wider text-white/90 bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9]">
             {selectedCity ? selectedCity.name : 'Gebetszeiten'}
@@ -75,7 +75,7 @@ const Index = () => {
         />
 
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C]/80 to-transparent">
-          <div className="max-w-3xl mx-auto space-y-2">
+          <div className="max-w-4xl mx-auto space-y-2">
             <LocationButton onLocationRequest={handleLocationRequest} />
             <CitySearch onCitySelect={setSelectedCity} />
           </div>

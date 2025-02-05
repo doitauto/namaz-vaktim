@@ -30,13 +30,16 @@ const getIcon = (name: string) => {
 };
 
 export const PrayerCard = ({ prayer, isNext, index, total }: PrayerCardProps) => {
-  // Calculate angle based on index and total number of prayers
-  // Subtract 90 degrees to start from the top (12 o'clock position)
+  // Berechne den Winkel basierend auf Index und Gesamtanzahl
   const angle = (index * (360 / total)) - 90;
   
-  // Increase radius to move cards further from center and prevent overlap
-  const radius = 'calc(50% - 9rem)'; 
+  // Vergrößere den Radius deutlich, um die Karten weiter nach außen zu verschieben
+  const radius = 240; // Fester Pixelwert für konsistentere Positionierung
   
+  // Berechne die x und y Position basierend auf dem Winkel und Radius
+  const x = Math.cos((angle * Math.PI) / 180) * radius;
+  const y = Math.sin((angle * Math.PI) / 180) * radius;
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
@@ -46,10 +49,9 @@ export const PrayerCard = ({ prayer, isNext, index, total }: PrayerCardProps) =>
         position: 'absolute',
         left: '50%',
         top: '50%',
-        transform: `rotate(${angle}deg) translateX(${radius}) rotate(-${angle}deg)`,
+        transform: `translate(calc(${x}px - 50%), calc(${y}px - 50%))`,
       }}
       className={`
-        -translate-x-1/2 -translate-y-1/2 
         backdrop-blur-xl p-6 rounded-2xl
         min-w-[160px]
         ${isNext 

@@ -2,11 +2,13 @@
 import { PrayerTime } from '@/lib/types';
 import { Sun, Sunrise, Moon, Clock, CloudSun } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getTranslation } from '@/lib/translations';
 
 interface PrayerCardProps {
   prayer: PrayerTime;
   isNext: boolean;
   index: number;
+  lang?: string;
 }
 
 const getIcon = (name: string) => {
@@ -28,7 +30,9 @@ const getIcon = (name: string) => {
   }
 };
 
-export const PrayerCard = ({ prayer, isNext, index }: PrayerCardProps) => {
+export const PrayerCard = ({ prayer, isNext, index, lang = 'tr' }: PrayerCardProps) => {
+  const t = getTranslation(lang);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -59,7 +63,7 @@ export const PrayerCard = ({ prayer, isNext, index }: PrayerCardProps) => {
         </div>
         {isNext && (
           <div className="px-3 py-1 rounded-full bg-white/10 text-sm text-white">
-            Nächstes Gebet
+            {t.nextPrayer}
           </div>
         )}
       </div>

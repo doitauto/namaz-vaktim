@@ -3,14 +3,17 @@ import { useState, useEffect } from 'react';
 import { Timer } from 'lucide-react';
 import { PrayerTime } from '@/lib/types';
 import { motion } from 'framer-motion';
+import { getTranslation } from '@/lib/translations';
 
 interface NextPrayerTimerProps {
   nextPrayer: PrayerTime;
   className?: string;
+  lang?: string;
 }
 
-export const NextPrayerTimer = ({ nextPrayer, className = '' }: NextPrayerTimerProps) => {
+export const NextPrayerTimer = ({ nextPrayer, className = '', lang = 'tr' }: NextPrayerTimerProps) => {
   const [timeLeft, setTimeLeft] = useState<string>('');
+  const t = getTranslation(lang);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -49,7 +52,7 @@ export const NextPrayerTimer = ({ nextPrayer, className = '' }: NextPrayerTimerP
         {timeLeft}
       </div>
       <div className="text-white/80 text-sm font-medium tracking-wide">
-        Vaktin Çıkmasına Kalan Süre
+        {t.nextPrayerLabel}
       </div>
     </motion.div>
   );

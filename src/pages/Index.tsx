@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -12,13 +11,16 @@ import { Loader2, Plus, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Link } from 'react-router-dom';
+import { getTranslation } from '@/lib/translations';
 
 const STORAGE_KEY = 'saved-prayer-locations';
 
 const Index = () => {
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
+  const [language, setLanguage] = useState<'tr' | 'de'>('tr');
   const { toast } = useToast();
+  const t = getTranslation(language);
   
   const { prayerTimes, hijriDate, isLoading, location, nearestLocation } = usePrayerTimes(
     selectedCity?.latitude,
@@ -106,9 +108,17 @@ const Index = () => {
             className="text-white/70 hover:text-white flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors"
           >
             <Compass className="h-4 w-4" />
-            Qibla-Richtung
+            {t.qiblaDirection}
           </Link>
           <div className="flex gap-2">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as 'tr' | 'de')}
+              className="bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2"
+            >
+              <option value="tr">Türkçe</option>
+              <option value="de">Deutsch</option>
+            </select>
             {selectedCity && (
               <Button
                 variant="ghost"
@@ -116,7 +126,7 @@ const Index = () => {
                 className="text-white/70 hover:text-white hover:bg-white/10"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Ort speichern
+                {t.saveLocation}
               </Button>
             )}
             <SavedLocations
@@ -135,6 +145,7 @@ const Index = () => {
             <NextPrayerTimer 
               nextPrayer={prayerTimes[0]} 
               className="inline-block mt-4"
+              lang={language}
             />
           )}
         </div>
@@ -146,6 +157,7 @@ const Index = () => {
               prayer={prayer}
               isNext={index === 0}
               index={index}
+              lang={language}
             />
           ))}
         </div>

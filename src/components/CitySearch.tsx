@@ -27,7 +27,6 @@ export const CitySearch = ({ onCitySelect }: CitySearchProps) => {
 
     setIsSearching(true);
     try {
-      // Nominatim API als Alternative zu OpenCage (keine API-Key erforderlich)
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchTerm)}&limit=1`
       );
@@ -70,13 +69,13 @@ export const CitySearch = ({ onCitySelect }: CitySearchProps) => {
         placeholder="Stadt suchen..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50"
+        className="flex-1 bg-white/10 border-[#0EA5E9]/30 text-white placeholder:text-white/50 focus:border-[#0EA5E9] transition-all duration-300"
         onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
       />
       <Button 
         onClick={handleSearch} 
         disabled={isSearching}
-        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+        className="bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 text-white hover:bg-[#0EA5E9]/30 hover:border-[#0EA5E9] transition-all duration-300"
       >
         <Search className="h-4 w-4" />
       </Button>

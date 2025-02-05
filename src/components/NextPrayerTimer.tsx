@@ -45,8 +45,12 @@ export const NextPrayerTimer = ({ nextPrayer, className = '' }: NextPrayerTimerP
       animate={{ opacity: 1, scale: 1 }}
       className={`text-center ${className}`}
     >
-      <div className="text-4xl font-light text-white mb-2">{timeLeft}</div>
-      <div className="text-blue-400 text-sm">Bis {nextPrayer.name}</div>
+      <div className="text-5xl font-light tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9] mb-3">
+        {timeLeft}
+      </div>
+      <div className="text-white/80 text-sm font-medium tracking-wide">
+        Bis {nextPrayer.name}
+      </div>
     </motion.div>
   );
 };

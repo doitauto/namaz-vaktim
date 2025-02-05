@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Geolocation } from '@capacitor/geolocation';
 import { PrayerTime } from '@/lib/types';
@@ -27,7 +28,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
     getCurrentPosition();
   }, [latitude, longitude]);
 
-  const { data: prayerTimes, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['prayerTimes', location?.lat, location?.lng],
     queryFn: async () => {
       if (!location) return null;
@@ -35,7 +36,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
       const params = new URLSearchParams({
         latitude: location.lat.toString(),
         longitude: location.lng.toString(),
-        method: '13', // DIYANET method
+        method: '13',
         shafaq: 'general',
         tune: '11,1,-7,5,-34,6,6,-7,-6',
         school: '1',
@@ -57,18 +58,16 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
 
       const data = await response.json();
       
-      // Format times to show only HH:mm, handling ISO8601 format
       const formatTime = (timeStr: string) => {
         try {
-          // Extract only the time portion (HH:mm) from the ISO string
           return timeStr.split('T')[1].substring(0, 5);
         } catch (e) {
           console.error('Error formatting time:', e);
           return timeStr;
         }
       };
-      
-      return [
+
+      const prayerTimes = [
         { name: 'Fajr', arabicName: 'الفجر', time: formatTime(data.data.timings.Fajr) },
         { name: 'Sunrise', arabicName: 'الشروق', time: formatTime(data.data.timings.Sunrise) },
         { name: 'Dhuhr', arabicName: 'الظهر', time: formatTime(data.data.timings.Dhuhr) },
@@ -76,9 +75,20 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         { name: 'Maghrib', arabicName: 'المغرب', time: formatTime(data.data.timings.Maghrib) },
         { name: 'Isha', arabicName: 'العشاء', time: formatTime(data.data.timings.Isha) },
       ] as PrayerTime[];
+      
+      return {
+        prayerTimes,
+        hijriDate: `${data.data.date.hijri.day} ${data.data.date.hijri.month.en} ${data.data.date.hijri.year}`,
+      };
     },
     enabled: !!location,
   });
 
-  return { prayerTimes, isLoading, error, location };
+  return { 
+    prayerTimes: data?.prayerTimes || [], 
+    hijriDate: data?.hijriDate || '',
+    isLoading, 
+    error, 
+    location 
+  };
 };

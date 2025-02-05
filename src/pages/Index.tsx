@@ -1,15 +1,18 @@
+
 import { useState } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
 import { CitySearch } from '@/components/CitySearch';
 import { LocationButton } from '@/components/LocationButton';
+import { NextPrayerTimer } from '@/components/NextPrayerTimer';
+import { LocationInfo } from '@/components/LocationInfo';
 import { City } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 
 const Index = () => {
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   
-  const { prayerTimes, isLoading, location } = usePrayerTimes(
+  const { prayerTimes, hijriDate, isLoading, location } = usePrayerTimes(
     selectedCity?.latitude,
     selectedCity?.longitude
   );
@@ -41,7 +44,16 @@ const Index = () => {
         <LocationButton onLocationRequest={handleLocationRequest} />
         <CitySearch onCitySelect={setSelectedCity} />
 
-        <div className="space-y-2 mt-8">
+        <LocationInfo 
+          city={selectedCity?.name || 'Aktueller Standort'} 
+          hijriDate={hijriDate}
+        />
+
+        {prayerTimes.length > 0 && (
+          <NextPrayerTimer nextPrayer={prayerTimes[0]} />
+        )}
+
+        <div className="space-y-2">
           {prayerTimes?.map((prayer, index) => (
             <PrayerCard
               key={prayer.name}

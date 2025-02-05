@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -163,12 +164,13 @@ const Index = () => {
                 className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center py-4 rounded-xl transition-all duration-300"
               >
                 <Languages className="h-6 w-6" />
-            </button>
-          </div>
+              </button>
+            </div>
 
-          <div className="space-y-2">
-            <LocationButton onLocationRequest={handleLocationRequest} />
-            <CitySearch onCitySelect={setSelectedCity} />
+            <div className="space-y-2">
+              <LocationButton onLocationRequest={handleLocationRequest} />
+              <CitySearch onCitySelect={setSelectedCity} />
+            </div>
           </div>
         </div>
       </div>

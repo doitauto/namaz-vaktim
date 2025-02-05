@@ -30,8 +30,12 @@ const getIcon = (name: string) => {
 };
 
 export const PrayerCard = ({ prayer, isNext, index, total }: PrayerCardProps) => {
+  // Calculate angle based on index and total number of prayers
+  // Subtract 90 degrees to start from the top (12 o'clock position)
   const angle = (index * (360 / total)) - 90;
-  const radius = 'calc(50% - 7rem)'; // Increased radius to move cards further from center
+  
+  // Increase radius to move cards further from center and prevent overlap
+  const radius = 'calc(50% - 9rem)'; 
   
   return (
     <motion.div

@@ -24,7 +24,6 @@ const Index = () => {
     selectedCity?.longitude
   );
 
-  // Lade gespeicherte Orte beim Start
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -32,7 +31,6 @@ const Index = () => {
     }
   }, []);
 
-  // Speichere Änderungen
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(savedLocations));
   }, [savedLocations]);
@@ -101,27 +99,35 @@ const Index = () => {
       </div>
 
       <div className="max-w-2xl mx-auto space-y-8 relative z-10">
-        <div className="text-center space-y-4">
+        <div className="flex items-center justify-between">
           <h1 className="text-4xl font-light tracking-wider text-white/90">
             {selectedCity ? selectedCity.name : 'Gebetszeiten'}
           </h1>
-          {selectedCity && (
-            <Button
-              variant="ghost"
-              onClick={handleSaveLocation}
-              className="text-white/70 hover:text-white hover:bg-white/10"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Ort speichern
-            </Button>
-          )}
-          {prayerTimes && prayerTimes.length > 0 && (
-            <NextPrayerTimer 
-              nextPrayer={prayerTimes[0]} 
-              className="inline-block"
+          <div className="flex items-center gap-2">
+            {selectedCity && (
+              <Button
+                variant="ghost"
+                onClick={handleSaveLocation}
+                className="text-white/70 hover:text-white hover:bg-white/10"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Ort speichern
+              </Button>
+            )}
+            <SavedLocations
+              savedLocations={savedLocations}
+              onLocationSelect={setSelectedCity}
+              onLocationRemove={handleRemoveLocation}
             />
-          )}
+          </div>
         </div>
+
+        {prayerTimes && prayerTimes.length > 0 && (
+          <NextPrayerTimer 
+            nextPrayer={prayerTimes[0]} 
+            className="inline-block"
+          />
+        )}
 
         <div className="space-y-3">
           {prayerTimes?.map((prayer, index) => (
@@ -141,11 +147,6 @@ const Index = () => {
 
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C]/80 to-transparent">
           <div className="max-w-2xl mx-auto space-y-2">
-            <SavedLocations
-              savedLocations={savedLocations}
-              onLocationSelect={setSelectedCity}
-              onLocationRemove={handleRemoveLocation}
-            />
             <LocationButton onLocationRequest={handleLocationRequest} />
             <CitySearch onCitySelect={setSelectedCity} />
           </div>

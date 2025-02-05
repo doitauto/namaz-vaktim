@@ -31,7 +31,7 @@ const getIcon = (name: string) => {
 
 export const PrayerCard = ({ prayer, isNext, index, total }: PrayerCardProps) => {
   const angle = (index * (360 / total)) - 90;
-  const radius = 'calc(50% - 5rem)';
+  const radius = 'calc(50% - 7rem)'; // Increased radius to move cards further from center
   
   return (
     <motion.div
@@ -46,22 +46,22 @@ export const PrayerCard = ({ prayer, isNext, index, total }: PrayerCardProps) =>
       }}
       className={`
         -translate-x-1/2 -translate-y-1/2 
-        backdrop-blur-xl p-5 rounded-2xl
-        min-w-[140px]
+        backdrop-blur-xl p-6 rounded-2xl
+        min-w-[160px]
         ${isNext 
-          ? 'bg-gradient-to-br from-[#8B5CF6]/30 to-[#0EA5E9]/30 border-2 border-[#8B5CF6] shadow-[0_0_20px_rgba(139,92,246,0.3)]' 
-          : 'bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300'
+          ? 'bg-gradient-to-br from-[#8B5CF6]/50 to-[#0EA5E9]/50 border-2 border-[#8B5CF6] shadow-[0_0_30px_rgba(139,92,246,0.4)]' 
+          : 'bg-white/20 border border-white/30 hover:bg-white/30 hover:border-white/40 transition-all duration-300'
         }
       `}
     >
-      <div className="flex flex-col items-center space-y-3">
-        <div className={`${isNext ? 'text-[#8B5CF6]' : 'text-white/90'}`}>
+      <div className="flex flex-col items-center space-y-4">
+        <div className={`${isNext ? 'text-[#8B5CF6]' : 'text-white'}`}>
           {getIcon(prayer.name)}
         </div>
-        <div className="text-2xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-white/90">
+        <div className="text-3xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white to-white/90">
           {prayer.time}
         </div>
-        <div className="text-sm font-medium text-white/80">
+        <div className="text-base font-medium text-white/90">
           {prayer.name}
         </div>
       </div>

@@ -31,13 +31,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] to-[#2C1A2F] px-4 py-8 relative overflow-hidden">
-      {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#8B5CF6] rounded-full filter blur-[128px] opacity-20"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#0EA5E9] rounded-full filter blur-[128px] opacity-20"></div>
       </div>
 
-      <div className="max-w-lg mx-auto space-y-8 relative z-10">
+      <div className="max-w-2xl mx-auto space-y-8 relative z-10">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-light tracking-wider text-white/90 bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9]">
             {selectedCity ? selectedCity.name : 'Gebetszeiten'}
@@ -46,7 +45,7 @@ const Index = () => {
 
         <div className="relative w-full aspect-square">
           <div className="absolute inset-0">
-            <div className="w-full h-full rounded-full bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_0_50px_rgba(139,92,246,0.1)] p-4">
+            <div className="w-full h-full rounded-full bg-white/5 backdrop-blur-xl border border-white/20 shadow-[0_0_50px_rgba(139,92,246,0.1)] p-8">
               <div className="relative w-full h-full">
                 {prayerTimes.length > 0 && (
                   <NextPrayerTimer 
@@ -76,7 +75,7 @@ const Index = () => {
         />
 
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C]/80 to-transparent">
-          <div className="max-w-lg mx-auto space-y-2">
+          <div className="max-w-2xl mx-auto space-y-2">
             <LocationButton onLocationRequest={handleLocationRequest} />
             <CitySearch onCitySelect={setSelectedCity} />
           </div>

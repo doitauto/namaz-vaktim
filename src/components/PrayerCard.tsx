@@ -13,25 +13,25 @@ interface PrayerCardProps {
 const getIcon = (name: string) => {
   switch (name.toLowerCase()) {
     case 'fajr':
-      return <Sunrise className="h-5 w-5" />;
+      return <Sunrise className="h-6 w-6" />;
     case 'sunrise':
-      return <Sun className="h-5 w-5" />;
+      return <Sun className="h-6 w-6" />;
     case 'dhuhr':
-      return <Sun className="h-5 w-5" />;
+      return <Sun className="h-6 w-6" />;
     case 'asr':
-      return <CloudSun className="h-5 w-5" />;
+      return <CloudSun className="h-6 w-6" />;
     case 'maghrib':
-      return <Moon className="h-5 w-5" />;
+      return <Moon className="h-6 w-6" />;
     case 'isha':
-      return <Moon className="h-5 w-5" />;
+      return <Moon className="h-6 w-6" />;
     default:
-      return <Clock className="h-5 w-5" />;
+      return <Clock className="h-6 w-6" />;
   }
 };
 
 export const PrayerCard = ({ prayer, isNext, index, total }: PrayerCardProps) => {
   const angle = (index * (360 / total)) - 90;
-  const radius = 'calc(50% - 3.5rem)'; // Increased radius to move items further out
+  const radius = 'calc(50% - 4.5rem)'; // Increased radius even more
   
   return (
     <motion.div
@@ -45,14 +45,17 @@ export const PrayerCard = ({ prayer, isNext, index, total }: PrayerCardProps) =>
         transform: `rotate(${angle}deg) translateX(${radius}) rotate(-${angle}deg)`,
       }}
       className={`
-        -translate-x-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-sm p-3 rounded-lg
-        ${isNext ? 'text-blue-400 ring-2 ring-blue-400/50' : 'text-white'}
+        -translate-x-1/2 -translate-y-1/2 
+        bg-white/20 backdrop-blur-md p-4 rounded-xl
+        border border-white/30 shadow-lg
+        min-w-[120px]
+        ${isNext ? 'bg-blue-500/30 ring-2 ring-blue-400 text-white' : 'text-white hover:bg-white/30 transition-colors'}
       `}
     >
-      <div className="flex flex-col items-center space-y-1">
+      <div className="flex flex-col items-center space-y-2">
         {getIcon(prayer.name)}
-        <div className="text-lg font-medium tracking-wide">{prayer.time}</div>
-        <div className="text-sm opacity-90 font-light">{prayer.name}</div>
+        <div className="text-xl font-semibold tracking-wide">{prayer.time}</div>
+        <div className="text-sm font-medium">{prayer.name}</div>
       </div>
     </motion.div>
   );

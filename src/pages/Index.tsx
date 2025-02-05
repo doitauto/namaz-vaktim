@@ -41,10 +41,12 @@ const Index = () => {
           <h1 className="text-4xl font-light tracking-wider text-white/90">
             {selectedCity ? selectedCity.name : 'Gebetszeiten'}
           </h1>
-          <NextPrayerTimer 
-            nextPrayer={prayerTimes[0]} 
-            className="inline-block"
-          />
+          {prayerTimes && prayerTimes.length > 0 && (
+            <NextPrayerTimer 
+              nextPrayer={prayerTimes[0]} 
+              className="inline-block"
+            />
+          )}
         </div>
 
         <div className="space-y-3">
@@ -63,15 +65,4 @@ const Index = () => {
           hijriDate={hijriDate}
         />
 
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C]/80 to-transparent">
-          <div className="max-w-2xl mx-auto space-y-2">
-            <LocationButton onLocationRequest={handleLocationRequest} />
-            <CitySearch onCitySelect={setSelectedCity} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default Index;
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-

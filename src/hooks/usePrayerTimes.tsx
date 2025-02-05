@@ -31,10 +31,32 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
     queryKey: ['prayerTimes', location?.lat, location?.lng],
     queryFn: async () => {
       if (!location) return null;
+      
+      const params = new URLSearchParams({
+        latitude: location.lat.toString(),
+        longitude: location.lng.toString(),
+        method: '13', // DIYANET method
+        shafaq: 'general',
+        tune: '11,1,-7,5,-34,6,6,-7,-6',
+        school: '1',
+        midnightMode: '0',
+        timezonestring: 'Europe/Berlin',
+        latitudeAdjustmentMethod: '1',
+        calendarMethod: 'DIYANET',
+        adjustment: '1',
+        iso8601: 'true'
+      });
+
       const response = await fetch(
-        `http://api.aladhan.com/v1/timings/${Math.floor(Date.now() / 1000)}?latitude=${location.lat}&longitude=${location.lng}&method=2`
+        `http://api.aladhan.com/v1/timings/${Math.floor(Date.now() / 1000)}?${params.toString()}`
       );
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch prayer times');
+      }
+
       const data = await response.json();
+      
       return [
         { name: 'Fajr', arabicName: 'الفجر', time: data.data.timings.Fajr },
         { name: 'Sunrise', arabicName: 'الشروق', time: data.data.timings.Sunrise },

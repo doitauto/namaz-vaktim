@@ -12,7 +12,14 @@ const config: CapacitorConfig = {
   },
   ios: {
     contentInset: 'automatic',
-    limitsNavigationsToAppBoundDomains: true
+    limitsNavigationsToAppBoundDomains: true,
+    handleApplicationNotifications: true,
+    webViewAllowsInlineMediaPlayback: true
+  },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 0
+    }
   }
 };
 

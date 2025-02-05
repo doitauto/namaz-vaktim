@@ -8,9 +8,10 @@ import { NextPrayerTimer } from '@/components/NextPrayerTimer';
 import { LocationInfo } from '@/components/LocationInfo';
 import { SavedLocations } from '@/components/SavedLocations';
 import { City, SavedLocation } from '@/lib/types';
-import { Loader2, Plus } from 'lucide-react';
+import { Loader2, Plus, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { Link } from 'react-router-dom';
 
 const STORAGE_KEY = 'saved-prayer-locations';
 
@@ -99,22 +100,31 @@ const Index = () => {
       </div>
 
       <div className="max-w-2xl mx-auto space-y-8 relative z-10">
-        <div className="flex justify-end gap-2">
-          {selectedCity && (
-            <Button
-              variant="ghost"
-              onClick={handleSaveLocation}
-              className="text-white/70 hover:text-white hover:bg-white/10"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Ort speichern
-            </Button>
-          )}
-          <SavedLocations
-            savedLocations={savedLocations}
-            onLocationSelect={setSelectedCity}
-            onLocationRemove={handleRemoveLocation}
-          />
+        <div className="flex justify-between items-center gap-2">
+          <Link 
+            to="/qibla"
+            className="text-white/70 hover:text-white flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors"
+          >
+            <Compass className="h-4 w-4" />
+            Qibla-Richtung
+          </Link>
+          <div className="flex gap-2">
+            {selectedCity && (
+              <Button
+                variant="ghost"
+                onClick={handleSaveLocation}
+                className="text-white/70 hover:text-white hover:bg-white/10"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Ort speichern
+              </Button>
+            )}
+            <SavedLocations
+              savedLocations={savedLocations}
+              onLocationSelect={setSelectedCity}
+              onLocationRemove={handleRemoveLocation}
+            />
+          </div>
         </div>
 
         <div className="text-center space-y-4 mt-12">

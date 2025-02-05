@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { MapPin } from 'lucide-react';
+import { LocateFixed } from 'lucide-react';
 
 interface LocationButtonProps {
   onLocationRequest: () => void;
@@ -9,12 +9,11 @@ interface LocationButtonProps {
 export const LocationButton = ({ onLocationRequest }: LocationButtonProps) => {
   return (
     <Button
-      variant="outline"
-      className="w-full bg-white/10 backdrop-blur-xl border-[#8B5CF6]/30 text-white hover:bg-[#8B5CF6]/20 hover:border-[#8B5CF6] transition-all duration-300"
+      variant="ghost"
+      className="w-full bg-white/5 hover:bg-white/10 backdrop-blur-xl text-white/70 hover:text-white flex items-center justify-center py-4 h-auto rounded-xl transition-all duration-300"
       onClick={onLocationRequest}
     >
-      <MapPin className="h-4 w-4 mr-2 text-[#8B5CF6]" />
-      Aktuellen Standort verwenden
+      <LocateFixed className="h-6 w-6" />
     </Button>
   );
 };

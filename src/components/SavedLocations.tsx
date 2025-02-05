@@ -1,4 +1,3 @@
-
 import { City, SavedLocation } from '@/lib/types';
 import { MapPin, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,11 +24,10 @@ export const SavedLocations = ({
     <Sheet>
       <SheetTrigger asChild>
         <Button 
-          variant="outline" 
-          className="w-full bg-white/10 backdrop-blur-xl border-[#8B5CF6]/30 text-white hover:bg-[#8B5CF6]/20 hover:border-[#8B5CF6] transition-all duration-300"
+          variant="ghost" 
+          className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center py-4 rounded-xl transition-all duration-300"
         >
-          <MapPin className="h-4 w-4 mr-2 text-[#8B5CF6]" />
-          Gespeicherte Orte
+          <MapPin className="h-6 w-6" />
         </Button>
       </SheetTrigger>
       <SheetContent className="bg-[#1A1F2C]/95 border-[#8B5CF6]/30 backdrop-blur-xl">

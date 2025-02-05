@@ -48,7 +48,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
       });
 
       const response = await fetch(
-        `http://api.aladhan.com/v1/timings/${Math.floor(Date.now() / 1000)}?${params.toString()}`
+        `https://api.aladhan.com/v1/timings/${Math.floor(Date.now() / 1000)}?${params.toString()}`
       );
       
       if (!response.ok) {

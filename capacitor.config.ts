@@ -1,11 +1,12 @@
+
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'dev.lovable.prayertimes',
-  appName: 'Prayer Times',
+  appId: 'app.lovable.f7322767919e404c92d29a8fed528e93',
+  appName: 'prayer-schedule-safari',
   webDir: 'dist',
   server: {
-    url: 'https://REPLACE_WITH_PROJECT_ID.lovableproject.com?forceHideBadge=true',
+    url: 'https://f7322767-919e-404c-92d2-9a8fed528e93.lovableproject.com?forceHideBadge=true',
     cleartext: true
   },
   ios: {

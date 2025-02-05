@@ -1,3 +1,4 @@
+
 import { City, SavedLocation } from '@/lib/types';
 import { MapPin, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,7 @@ export const SavedLocations = ({
       <SheetTrigger asChild>
         <Button 
           variant="ghost" 
-          className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center py-4 rounded-xl transition-all duration-300"
+          className="h-14 flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center rounded-xl transition-all duration-300"
         >
           <MapPin className="h-6 w-6" />
         </Button>

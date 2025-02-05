@@ -99,37 +99,37 @@ const Index = () => {
       </div>
 
       <div className="max-w-2xl mx-auto space-y-8 relative z-10">
-        <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-light tracking-wider text-white/90">
-            {selectedCity ? selectedCity.name : 'Gebetszeiten'}
-          </h1>
-          <div className="flex items-center gap-2">
-            {selectedCity && (
-              <Button
-                variant="ghost"
-                onClick={handleSaveLocation}
-                className="text-white/70 hover:text-white hover:bg-white/10"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Ort speichern
-              </Button>
-            )}
-            <SavedLocations
-              savedLocations={savedLocations}
-              onLocationSelect={setSelectedCity}
-              onLocationRemove={handleRemoveLocation}
-            />
-          </div>
+        <div className="flex justify-end gap-2">
+          {selectedCity && (
+            <Button
+              variant="ghost"
+              onClick={handleSaveLocation}
+              className="text-white/70 hover:text-white hover:bg-white/10"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Ort speichern
+            </Button>
+          )}
+          <SavedLocations
+            savedLocations={savedLocations}
+            onLocationSelect={setSelectedCity}
+            onLocationRemove={handleRemoveLocation}
+          />
         </div>
 
-        {prayerTimes && prayerTimes.length > 0 && (
-          <NextPrayerTimer 
-            nextPrayer={prayerTimes[0]} 
-            className="inline-block"
-          />
-        )}
+        <div className="text-center space-y-4 mt-12">
+          <h1 className="text-5xl font-light tracking-wider text-white/90">
+            {selectedCity ? selectedCity.name : 'Gebetszeiten'}
+          </h1>
+          {prayerTimes && prayerTimes.length > 0 && (
+            <NextPrayerTimer 
+              nextPrayer={prayerTimes[0]} 
+              className="inline-block mt-4"
+            />
+          )}
+        </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 mt-12">
           {prayerTimes?.map((prayer, index) => (
             <PrayerCard
               key={prayer.name}

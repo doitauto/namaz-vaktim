@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -64,15 +65,19 @@ export const CitySearch = ({ onCitySelect }: CitySearchProps) => {
   };
 
   return (
-    <div className="flex gap-2 p-4">
+    <div className="flex gap-2">
       <Input
         placeholder="Stadt suchen..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="flex-1"
+        className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50"
         onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
       />
-      <Button onClick={handleSearch} disabled={isSearching}>
+      <Button 
+        onClick={handleSearch} 
+        disabled={isSearching}
+        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+      >
         <Search className="h-4 w-4" />
       </Button>
     </div>

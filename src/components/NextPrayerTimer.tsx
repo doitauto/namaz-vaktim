@@ -1,14 +1,15 @@
 
 import { useState, useEffect } from 'react';
 import { Timer } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 import { PrayerTime } from '@/lib/types';
+import { motion } from 'framer-motion';
 
 interface NextPrayerTimerProps {
   nextPrayer: PrayerTime;
+  className?: string;
 }
 
-export const NextPrayerTimer = ({ nextPrayer }: NextPrayerTimerProps) => {
+export const NextPrayerTimer = ({ nextPrayer, className = '' }: NextPrayerTimerProps) => {
   const [timeLeft, setTimeLeft] = useState<string>('');
 
   useEffect(() => {
@@ -24,8 +25,9 @@ export const NextPrayerTimer = ({ nextPrayer }: NextPrayerTimerProps) => {
       const diff = nextPrayerTime.getTime() - Date.now();
       const hoursLeft = Math.floor(diff / (1000 * 60 * 60));
       const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secondsLeft = Math.floor((diff % (1000 * 60)) / 1000);
 
-      return `${hoursLeft.toString().padStart(2, '0')}:${minutesLeft.toString().padStart(2, '0')}`;
+      return `${hoursLeft.toString().padStart(2, '0')}:${minutesLeft.toString().padStart(2, '0')}:${secondsLeft.toString().padStart(2, '0')}`;
     };
 
     const timer = setInterval(() => {
@@ -38,17 +40,13 @@ export const NextPrayerTimer = ({ nextPrayer }: NextPrayerTimerProps) => {
   }, [nextPrayer]);
 
   return (
-    <Card className="p-6 mb-4 bg-gradient-to-r from-indigo-500/90 to-blue-500/90 text-white">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h3 className="text-lg font-medium tracking-tight">Nächstes Gebet</h3>
-          <p className="text-sm text-white/80">{nextPrayer.name}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Timer className="h-5 w-5 opacity-80" />
-          <span className="text-3xl font-light">{timeLeft}</span>
-        </div>
-      </div>
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className={`text-center ${className}`}
+    >
+      <div className="text-4xl font-light text-white mb-2">{timeLeft}</div>
+      <div className="text-blue-400 text-sm">Bis {nextPrayer.name}</div>
+    </motion.div>
   );
 };

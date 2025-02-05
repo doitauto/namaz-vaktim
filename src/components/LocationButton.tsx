@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { MapPin } from 'lucide-react';
 
@@ -9,7 +10,7 @@ export const LocationButton = ({ onLocationRequest }: LocationButtonProps) => {
   return (
     <Button
       variant="outline"
-      className="w-full mb-4 bg-white/80 backdrop-blur-sm"
+      className="w-full bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
       onClick={onLocationRequest}
     >
       <MapPin className="h-4 w-4 mr-2" />

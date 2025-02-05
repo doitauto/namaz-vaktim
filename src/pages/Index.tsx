@@ -23,44 +23,57 @@ const Index = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-indigo-50">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0a1529] to-[#0f2547]">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 px-4 py-8">
-      <div className="max-w-md mx-auto space-y-6">
+    <div className="min-h-screen bg-[url('/lovable-uploads/d913d149-e71c-4a02-939a-76db7c3c928b.png')] bg-cover bg-center px-4 py-8">
+      <div className="max-w-lg mx-auto space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-light tracking-tight text-gray-900">
+          <h1 className="text-3xl font-light tracking-wider text-white/90">
             {selectedCity ? selectedCity.name : 'Gebetszeiten'}
           </h1>
-          <p className="text-gray-500 text-sm">
-            Alle Zeiten für heute
-          </p>
         </div>
-        
-        <LocationButton onLocationRequest={handleLocationRequest} />
-        <CitySearch onCitySelect={setSelectedCity} />
+
+        <div className="relative w-full aspect-square">
+          <div className="absolute inset-0">
+            <div className="w-full h-full rounded-full bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-sm p-8">
+              <div className="relative w-full h-full">
+                {prayerTimes.length > 0 && (
+                  <NextPrayerTimer 
+                    nextPrayer={prayerTimes[0]} 
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                  />
+                )}
+                <div className="absolute inset-0">
+                  {prayerTimes?.map((prayer, index) => (
+                    <PrayerCard
+                      key={prayer.name}
+                      prayer={prayer}
+                      isNext={index === 0}
+                      index={index}
+                      total={prayerTimes.length}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <LocationInfo 
           city={selectedCity?.name || 'Aktueller Standort'} 
           hijriDate={hijriDate}
         />
 
-        {prayerTimes.length > 0 && (
-          <NextPrayerTimer nextPrayer={prayerTimes[0]} />
-        )}
-
-        <div className="space-y-2">
-          {prayerTimes?.map((prayer, index) => (
-            <PrayerCard
-              key={prayer.name}
-              prayer={prayer}
-              isNext={index === 0}
-            />
-          ))}
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+          <div className="max-w-lg mx-auto space-y-2">
+            <LocationButton onLocationRequest={handleLocationRequest} />
+            <CitySearch onCitySelect={setSelectedCity} />
+          </div>
         </div>
       </div>
     </div>

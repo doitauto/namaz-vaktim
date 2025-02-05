@@ -14,7 +14,8 @@ const config: CapacitorConfig = {
     contentInset: 'automatic',
     limitsNavigationsToAppBoundDomains: true,
     handleApplicationNotifications: true,
-    webViewAllowsInlineMediaPlayback: true
+    webViewAllowsInlineMediaPlayback: true,
+    scheme: 'app'
   },
   plugins: {
     SplashScreen: {

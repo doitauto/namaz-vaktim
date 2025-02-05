@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -8,7 +7,7 @@ import { NextPrayerTimer } from '@/components/NextPrayerTimer';
 import { LocationInfo } from '@/components/LocationInfo';
 import { SavedLocations } from '@/components/SavedLocations';
 import { City, SavedLocation } from '@/lib/types';
-import { Loader2, Plus, Compass, Languages, MapPin } from 'lucide-react';
+import { Loader2, Compass, MapPin, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Link } from 'react-router-dom';
@@ -139,20 +138,18 @@ const Index = () => {
             <div className="flex items-center justify-between gap-2 mb-4">
               <Link 
                 to="/qibla"
-                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all duration-300"
+                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center py-4 rounded-xl transition-all duration-300"
               >
-                <Compass className="h-5 w-5" />
-                <span className="text-sm font-medium">{t.qiblaDirection}</span>
+                <Compass className="h-6 w-6" />
               </Link>
-              
+            
               <Button
                 variant="ghost"
                 onClick={handleSaveLocation}
-                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all duration-300"
+                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center py-4 rounded-xl transition-all duration-300"
                 disabled={!selectedCity}
               >
-                <MapPin className="h-5 w-5" />
-                <span className="text-sm font-medium">{t.saveLocation}</span>
+                <MapPin className="h-6 w-6" />
               </Button>
 
               <SavedLocations
@@ -161,20 +158,17 @@ const Index = () => {
                 onLocationRemove={handleRemoveLocation}
               />
 
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as 'tr' | 'de')}
-                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 border-none rounded-xl px-4 py-3 appearance-none cursor-pointer transition-all duration-300"
+              <button
+                onClick={() => setLanguage(language === 'tr' ? 'de' : 'tr')}
+                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center py-4 rounded-xl transition-all duration-300"
               >
-                <option value="tr">Türkçe</option>
-                <option value="de">Deutsch</option>
-              </select>
-            </div>
+                <Languages className="h-6 w-6" />
+            </button>
+          </div>
 
-            <div className="space-y-2">
-              <LocationButton onLocationRequest={handleLocationRequest} />
-              <CitySearch onCitySelect={setSelectedCity} />
-            </div>
+          <div className="space-y-2">
+            <LocationButton onLocationRequest={handleLocationRequest} />
+            <CitySearch onCitySelect={setSelectedCity} />
           </div>
         </div>
       </div>

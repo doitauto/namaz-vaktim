@@ -40,7 +40,7 @@ const Index = () => {
 
         <div className="relative w-full aspect-square">
           <div className="absolute inset-0">
-            <div className="w-full h-full rounded-full bg-white/10 backdrop-blur-sm p-8">
+            <div className="w-full h-full rounded-full bg-white/5 backdrop-blur-lg border border-white/10 shadow-lg p-8">
               <div className="relative w-full h-full">
                 {prayerTimes.length > 0 && (
                   <NextPrayerTimer 

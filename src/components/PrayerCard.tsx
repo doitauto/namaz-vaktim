@@ -31,7 +31,7 @@ const getIcon = (name: string) => {
 
 export const PrayerCard = ({ prayer, isNext, index, total }: PrayerCardProps) => {
   const angle = (index * (360 / total)) - 90;
-  const radius = 'calc(50% - 2rem)';
+  const radius = 'calc(50% - 3.5rem)'; // Increased radius to move items further out
   
   return (
     <motion.div
@@ -45,14 +45,14 @@ export const PrayerCard = ({ prayer, isNext, index, total }: PrayerCardProps) =>
         transform: `rotate(${angle}deg) translateX(${radius}) rotate(-${angle}deg)`,
       }}
       className={`
-        -translate-x-1/2 -translate-y-1/2
-        ${isNext ? 'text-blue-400' : 'text-white/80'}
+        -translate-x-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-sm p-3 rounded-lg
+        ${isNext ? 'text-blue-400 ring-2 ring-blue-400/50' : 'text-white'}
       `}
     >
       <div className="flex flex-col items-center space-y-1">
         {getIcon(prayer.name)}
-        <div className="text-lg font-light">{prayer.time}</div>
-        <div className="text-sm opacity-80">{prayer.name}</div>
+        <div className="text-lg font-medium tracking-wide">{prayer.time}</div>
+        <div className="text-sm opacity-90 font-light">{prayer.name}</div>
       </div>
     </motion.div>
   );

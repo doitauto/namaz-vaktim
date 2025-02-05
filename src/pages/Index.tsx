@@ -144,6 +144,7 @@ const Index = () => {
           {prayerTimes && prayerTimes.length > 0 && (
             <NextPrayerTimer 
               nextPrayer={prayerTimes[0]} 
+              prayerTimes={prayerTimes}
               className="inline-block mt-4"
               lang={language}
             />

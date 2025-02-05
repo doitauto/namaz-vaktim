@@ -57,13 +57,18 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
 
       const data = await response.json();
       
+      // Format times to show only HH:mm
+      const formatTime = (time: string) => {
+        return time.split(' ')[1].slice(0, 5);
+      };
+      
       return [
-        { name: 'Fajr', arabicName: 'الفجر', time: data.data.timings.Fajr },
-        { name: 'Sunrise', arabicName: 'الشروق', time: data.data.timings.Sunrise },
-        { name: 'Dhuhr', arabicName: 'الظهر', time: data.data.timings.Dhuhr },
-        { name: 'Asr', arabicName: 'العصر', time: data.data.timings.Asr },
-        { name: 'Maghrib', arabicName: 'المغرب', time: data.data.timings.Maghrib },
-        { name: 'Isha', arabicName: 'العشاء', time: data.data.timings.Isha },
+        { name: 'Fajr', arabicName: 'الفجر', time: formatTime(data.data.timings.Fajr) },
+        { name: 'Sunrise', arabicName: 'الشروق', time: formatTime(data.data.timings.Sunrise) },
+        { name: 'Dhuhr', arabicName: 'الظهر', time: formatTime(data.data.timings.Dhuhr) },
+        { name: 'Asr', arabicName: 'العصر', time: formatTime(data.data.timings.Asr) },
+        { name: 'Maghrib', arabicName: 'المغرب', time: formatTime(data.data.timings.Maghrib) },
+        { name: 'Isha', arabicName: 'العشاء', time: formatTime(data.data.timings.Isha) },
       ] as PrayerTime[];
     },
     enabled: !!location,

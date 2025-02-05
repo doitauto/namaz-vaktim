@@ -49,7 +49,7 @@ export const NextPrayerTimer = ({ nextPrayer, className = '' }: NextPrayerTimerP
         {timeLeft}
       </div>
       <div className="text-white/80 text-sm font-medium tracking-wide">
-        Bis {nextPrayer.name}
+        Vaktin Çıkmasına Kalan Süre
       </div>
     </motion.div>
   );

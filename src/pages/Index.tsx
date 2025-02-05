@@ -129,7 +129,7 @@ const Index = () => {
 
         <div className="text-center space-y-4 mt-12">
           <h1 className="text-5xl font-light tracking-wider text-white/90">
-            {selectedCity ? selectedCity.name : 'Gebetszeiten'}
+            {selectedCity?.name}
           </h1>
           {prayerTimes && prayerTimes.length > 0 && (
             <NextPrayerTimer 

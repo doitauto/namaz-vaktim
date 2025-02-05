@@ -57,9 +57,15 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
 
       const data = await response.json();
       
-      // Format times to show only HH:mm
-      const formatTime = (time: string) => {
-        return time.split(' ')[1].slice(0, 5);
+      // Format times to show only HH:mm, handling ISO8601 format
+      const formatTime = (timeStr: string) => {
+        try {
+          // Extract only the time portion (HH:mm) from the ISO string
+          return timeStr.split('T')[1].substring(0, 5);
+        } catch (e) {
+          console.error('Error formatting time:', e);
+          return timeStr;
+        }
       };
       
       return [

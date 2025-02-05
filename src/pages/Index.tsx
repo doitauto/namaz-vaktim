@@ -1,24 +1,88 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
 import { CitySearch } from '@/components/CitySearch';
 import { LocationButton } from '@/components/LocationButton';
 import { NextPrayerTimer } from '@/components/NextPrayerTimer';
 import { LocationInfo } from '@/components/LocationInfo';
-import { City } from '@/lib/types';
-import { Loader2 } from 'lucide-react';
+import { SavedLocations } from '@/components/SavedLocations';
+import { City, SavedLocation } from '@/lib/types';
+import { Loader2, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
+
+const STORAGE_KEY = 'saved-prayer-locations';
 
 const Index = () => {
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
+  const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
+  const { toast } = useToast();
   
   const { prayerTimes, hijriDate, isLoading, location, nearestLocation } = usePrayerTimes(
     selectedCity?.latitude,
     selectedCity?.longitude
   );
 
+  // Lade gespeicherte Orte beim Start
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      setSavedLocations(JSON.parse(saved));
+    }
+  }, []);
+
+  // Speichere Änderungen
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedLocations));
+  }, [savedLocations]);
+
   const handleLocationRequest = () => {
     setSelectedCity(null);
+  };
+
+  const handleSaveLocation = () => {
+    if (!selectedCity) {
+      toast({
+        title: "Fehler",
+        description: "Bitte wählen Sie zuerst einen Ort aus",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const exists = savedLocations.some(loc => 
+      loc.city.latitude === selectedCity.latitude && 
+      loc.city.longitude === selectedCity.longitude
+    );
+
+    if (exists) {
+      toast({
+        title: "Hinweis",
+        description: "Dieser Ort wurde bereits gespeichert",
+      });
+      return;
+    }
+
+    const newLocation: SavedLocation = {
+      id: crypto.randomUUID(),
+      city: selectedCity,
+      timestamp: Date.now(),
+    };
+
+    setSavedLocations(prev => [...prev, newLocation]);
+    toast({
+      title: "Erfolg",
+      description: "Ort wurde gespeichert",
+    });
+  };
+
+  const handleRemoveLocation = (id: string) => {
+    setSavedLocations(prev => prev.filter(loc => loc.id !== id));
+    toast({
+      title: "Erfolg",
+      description: "Ort wurde entfernt",
+    });
   };
 
   if (isLoading) {
@@ -41,6 +105,16 @@ const Index = () => {
           <h1 className="text-4xl font-light tracking-wider text-white/90">
             {selectedCity ? selectedCity.name : 'Gebetszeiten'}
           </h1>
+          {selectedCity && (
+            <Button
+              variant="ghost"
+              onClick={handleSaveLocation}
+              className="text-white/70 hover:text-white hover:bg-white/10"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Ort speichern
+            </Button>
+          )}
           {prayerTimes && prayerTimes.length > 0 && (
             <NextPrayerTimer 
               nextPrayer={prayerTimes[0]} 
@@ -67,6 +141,11 @@ const Index = () => {
 
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C]/80 to-transparent">
           <div className="max-w-2xl mx-auto space-y-2">
+            <SavedLocations
+              savedLocations={savedLocations}
+              onLocationSelect={setSelectedCity}
+              onLocationRemove={handleRemoveLocation}
+            />
             <LocationButton onLocationRequest={handleLocationRequest} />
             <CitySearch onCitySelect={setSelectedCity} />
           </div>

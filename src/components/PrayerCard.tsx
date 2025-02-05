@@ -11,6 +11,44 @@ interface PrayerCardProps {
   lang?: string;
 }
 
+const getPrayerNameInTurkish = (name: string): string => {
+  switch (name.toLowerCase()) {
+    case 'fajr':
+      return 'İmsak';
+    case 'sunrise':
+      return 'Güneş';
+    case 'dhuhr':
+      return 'Öğle';
+    case 'asr':
+      return 'İkindi';
+    case 'maghrib':
+      return 'Akşam';
+    case 'isha':
+      return 'Yatsı';
+    default:
+      return name;
+  }
+};
+
+const getPrayerNameInGerman = (name: string): string => {
+  switch (name.toLowerCase()) {
+    case 'fajr':
+      return 'Morgengebet';
+    case 'sunrise':
+      return 'Sonnenaufgang';
+    case 'dhuhr':
+      return 'Mittagsgebet';
+    case 'asr':
+      return 'Nachmittagsgebet';
+    case 'maghrib':
+      return 'Abendgebet';
+    case 'isha':
+      return 'Nachtgebet';
+    default:
+      return name;
+  }
+};
+
 const getIcon = (name: string) => {
   switch (name.toLowerCase()) {
     case 'fajr':
@@ -33,6 +71,12 @@ const getIcon = (name: string) => {
 export const PrayerCard = ({ prayer, isNext, index, lang = 'tr' }: PrayerCardProps) => {
   const t = getTranslation(lang);
 
+  const displayName = lang === 'tr' 
+    ? getPrayerNameInTurkish(prayer.name)
+    : lang === 'de' 
+      ? getPrayerNameInGerman(prayer.name)
+      : prayer.name;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -54,7 +98,7 @@ export const PrayerCard = ({ prayer, isNext, index, lang = 'tr' }: PrayerCardPro
           </div>
           <div>
             <h3 className="text-lg font-medium text-white/90">
-              {prayer.name}
+              {displayName}
             </h3>
             <p className={`text-2xl font-bold ${isNext ? 'text-white' : 'text-white/80'}`}>
               {prayer.time}

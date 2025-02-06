@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -98,14 +99,14 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] to-[#2C1A2F] px-4 py-8 pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] to-[#2C1A2F] px-4 pb-32">
       <div className="fixed inset-0 overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#8B5CF6] rounded-full filter blur-[128px] opacity-20"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#0EA5E9] rounded-full filter blur-[128px] opacity-20"></div>
       </div>
 
-      <div className="max-w-2xl mx-auto space-y-8 relative z-10">
-        <div className="absolute top-0 right-0">
+      <div className="max-w-2xl mx-auto relative z-10">
+        <div className="absolute top-0 right-0 pt-8">
           <a 
             href="https://ditib-lonsee.de/imsakiye/index.html"
             target="_blank"
@@ -148,7 +149,7 @@ const Index = () => {
           hijriDate={hijriDate}
         />
 
-        <div className="mt-8">
+        <div className="mt-8 mb-32">
           <div className="flex gap-2 mb-4">
             <Button
               variant="ghost"

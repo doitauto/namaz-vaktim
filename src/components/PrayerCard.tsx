@@ -83,7 +83,7 @@ export const PrayerCard = ({ prayer, isNext, index, lang = 'tr' }: PrayerCardPro
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
       className={`
-        relative bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 
+        relative bg-white/5 backdrop-blur-xl rounded-xl
         transition-all duration-300 group hover:bg-white/10
         ${prayer.isCurrentPrayer ? 'ring-2 ring-[#8B5CF6]' : ''}
       `}
@@ -133,3 +133,4 @@ export const PrayerCard = ({ prayer, isNext, index, lang = 'tr' }: PrayerCardPro
     </motion.div>
   );
 };
+

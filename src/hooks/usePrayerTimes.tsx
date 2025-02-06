@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Geolocation } from '@capacitor/geolocation';
 import { PrayerTime } from '@/lib/types';
@@ -40,28 +39,18 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         );
         const data = await response.json();
         
-        // Get immediate location (village, suburb, etc.)
-        const immediateLocation = data.address?.village || 
-                                data.address?.suburb || 
-                                data.address?.hamlet ||
-                                data.address?.neighbourhood ||
-                                'Unbekannter Ort';
-        
-        // Get nearest larger city/town and district
+        // Get the nearest city/town
         const nearestCity = data.address?.city || 
                           data.address?.town ||
-                          data.address?.municipality;
+                          data.address?.municipality ||
+                          'Unbekannter Ort';
         
+        // Get the county/district
         const district = data.address?.county || 
                         data.address?.state_district;
         
-        // Combine nearest city and district
-        const parentLocationText = nearestCity && district 
-          ? `${nearestCity} (${district})`
-          : nearestCity || district || '';
-                           
-        setNearestLocation(immediateLocation);
-        setParentLocation(parentLocationText);
+        setNearestLocation(nearestCity);
+        setParentLocation(district || '');
       } catch (error) {
         console.error('Error fetching location name:', error);
         setNearestLocation('Unbekannter Ort');

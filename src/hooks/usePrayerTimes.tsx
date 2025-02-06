@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Geolocation } from '@capacitor/geolocation';
 import { PrayerTime } from '@/lib/types';
@@ -72,7 +71,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         longitude: location.lng.toString(),
         method: '13',
         shafaq: 'general',
-        tune: '0,0,0,5,0,6,8,0,0', // Feinabstimmung für Lonsee basierend auf Diyanet
+        tune: '0,0,0,5,0,6,6,0,0', // Feinabstimmung für Lonsee basierend auf Diyanet (Anpassung für Maghrib/Isha)
         school: '1',
         midnightMode: '0',
         timezonestring: 'Europe/Berlin',

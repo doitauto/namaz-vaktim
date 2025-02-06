@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Timer } from 'lucide-react';
 import { PrayerTime } from '@/lib/types';
@@ -17,6 +16,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
   const [timeLeft, setTimeLeft] = useState<string>('');
   const t = getTranslation(lang);
   const { toast } = useToast();
+  const [hasShownNotification, setHasShownNotification] = useState(false);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -57,6 +57,42 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
         }
       }
 
+      const now2 = new Date();
+      const currentHours = now2.getHours();
+      const currentMinutes = now2.getMinutes();
+      const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+
+      // Finde Maghrib (Akşam) Gebetszeit
+      const maghribPrayer = prayerTimes.find(prayer => prayer.name === 'Maghrib');
+      
+      if (maghribPrayer) {
+        const [maghribHours, maghribMinutes] = maghribPrayer.time.split(':').map(Number);
+        const maghribTimeInMinutes = maghribHours * 60 + maghribMinutes;
+        
+        // Berechne die Zeit 45 Minuten vor Maghrib
+        const notificationTimeInMinutes = maghribTimeInMinutes - 45;
+        
+        // Wenn es genau die Zeit für die Benachrichtigung ist und sie noch nicht angezeigt wurde
+        if (currentTimeInMinutes === notificationTimeInMinutes && !hasShownNotification) {
+          const message = lang === 'tr' 
+            ? "Akşam namazına 45 dakika kala sadece farz namaz kılınabilir."
+            : "45 Minuten vor dem Abendgebet dürfen nur Fard-Gebete verrichtet werden.";
+          
+          toast({
+            title: lang === 'tr' ? "Namaz Hatırlatması" : "Gebetsbenachrichtigung",
+            description: message,
+            duration: 10000, // 10 Sekunden anzeigen
+          });
+          
+          setHasShownNotification(true);
+        }
+        
+        // Reset hasShownNotification nach dem Maghrib-Gebet
+        if (currentTimeInMinutes > maghribTimeInMinutes) {
+          setHasShownNotification(false);
+        }
+      }
+
       // Berechne die Zeitdifferenz
       const diff = nextPrayerTime.getTime() - now.getTime();
       
@@ -76,7 +112,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
     setTimeLeft(calculateTimeLeft());
 
     return () => clearInterval(timer);
-  }, [nextPrayer, prayerTimes]);
+  }, [nextPrayer, prayerTimes, toast, lang, hasShownNotification]);
 
   return (
     <motion.div

@@ -14,113 +14,42 @@ interface NextPrayerTimerProps {
 
 export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang = 'tr' }: NextPrayerTimerProps) => {
   const [timeLeft, setTimeLeft] = useState<string>('');
-  const [isPrayerRestricted, setIsPrayerRestricted] = useState(false);
-  const [restrictionMessage, setRestrictionMessage] = useState<string>('');
   const t = getTranslation(lang);
   const { toast } = useToast();
 
-  const checkPrayerRestrictions = () => {
-    if (!prayerTimes) return;
-
-    const now = new Date();
-    const currentTime = now.getHours() * 60 + now.getMinutes();
-
-    const sunriseTime = prayerTimes.find(p => p.name === 'Sunrise');
-    const dhuhrTime = prayerTimes.find(p => p.name === 'Dhuhr');
-    const maghribTime = prayerTimes.find(p => p.name === 'Maghrib');
-
-    if (sunriseTime && dhuhrTime && maghribTime) {
-      const [sunriseHours, sunriseMinutes] = sunriseTime.time.split(':').map(Number);
-      const [dhuhrHours, dhuhrMinutes] = dhuhrTime.time.split(':').map(Number);
-      const [maghribHours, maghribMinutes] = maghribTime.time.split(':').map(Number);
-
-      const sunriseInMinutes = sunriseHours * 60 + sunriseMinutes;
-      const dhuhrInMinutes = dhuhrHours * 60 + dhuhrMinutes;
-      const maghribInMinutes = maghribHours * 60 + maghribMinutes;
-
-      // Check if current time is within 45 minutes after sunrise
-      if (currentTime >= sunriseInMinutes && currentTime <= sunriseInMinutes + 45) {
-        setIsPrayerRestricted(true);
-        const message = lang === 'tr' 
-          ? "Güneş doğduktan sonraki 45 dakika içinde namaz kılınmaz" 
-          : "In den ersten 45 Minuten nach Sonnenaufgang ist das Gebet nicht gestattet";
-        setRestrictionMessage(message);
-        toast({
-          title: lang === 'tr' ? "Namaz Kılınmaz" : "Gebetsverbot",
-          description: message,
-          duration: 5000,
-        });
-      }
-      // Check if current time is within 45 minutes before dhuhr
-      else if (currentTime >= dhuhrInMinutes - 45 && currentTime < dhuhrInMinutes) {
-        setIsPrayerRestricted(true);
-        const message = lang === 'tr'
-          ? "Öğle namazı vaktinden önceki 45 dakika içinde namaz kılınmaz"
-          : "In den letzten 45 Minuten vor dem Mittagsgebet ist das Gebet nicht gestattet";
-        setRestrictionMessage(message);
-        toast({
-          title: lang === 'tr' ? "Namaz Kılınmaz" : "Gebetsverbot",
-          description: message,
-          duration: 5000,
-        });
-      }
-      // Check if current time is within 45 minutes before maghrib
-      else if (currentTime >= maghribInMinutes - 45 && currentTime < maghribInMinutes) {
-        setIsPrayerRestricted(true);
-        const message = lang === 'tr'
-          ? "Akşam namazından önceki 45 dakika içinde sadece ikindi farz namazı kılınabilir"
-          : "In den letzten 45 Minuten vor dem Abendgebet ist nur das Asr Farz-Gebet gestattet";
-        setRestrictionMessage(message);
-        toast({
-          title: lang === 'tr' ? "Namaz Kısıtlaması" : "Gebetseinschränkung",
-          description: message,
-          duration: 5000,
-        });
-      } else {
-        setIsPrayerRestricted(false);
-        setRestrictionMessage('');
-      }
-    }
-  };
-
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const [hours, minutes] = nextPrayer.time.split(':');
-      const nextPrayerTime = new Date();
-      nextPrayerTime.setHours(parseInt(hours), parseInt(minutes), 0);
-
       const now = new Date();
-      let diff = nextPrayerTime.getTime() - now.getTime();
-
-      // Wenn die Gebetszeit bereits vorbei ist, füge einen Tag hinzu
-      if (diff < 0) {
+      const [prayerHours, prayerMinutes] = nextPrayer.time.split(':').map(Number);
+      
+      // Create date object for next prayer time
+      const nextPrayerTime = new Date();
+      nextPrayerTime.setHours(prayerHours, prayerMinutes, 0, 0);
+      
+      // If prayer time has passed today, add one day
+      if (now > nextPrayerTime) {
         nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
-        diff = nextPrayerTime.getTime() - now.getTime();
       }
-
-      const hoursLeft = Math.floor(diff / (1000 * 60 * 60));
-      const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const secondsLeft = Math.floor((diff % (1000 * 60)) / 1000);
-
-      return `${String(hoursLeft).padStart(2, '0')}:${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+      
+      // Calculate difference in milliseconds
+      const diff = nextPrayerTime.getTime() - now.getTime();
+      
+      // Convert to hours, minutes, seconds
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
-      checkPrayerRestrictions();
     }, 1000);
 
     setTimeLeft(calculateTimeLeft());
-    checkPrayerRestrictions();
 
     return () => clearInterval(timer);
-  }, [nextPrayer, lang]);
-
-  const nextPrayerName = lang === 'tr' 
-    ? getPrayerNameInTurkish(nextPrayer.name)
-    : lang === 'de'
-      ? getPrayerNameInGerman(nextPrayer.name)
-      : nextPrayer.name;
+  }, [nextPrayer]);
 
   return (
     <motion.div
@@ -134,11 +63,6 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
       <div className="text-3xl font-light tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9] mb-3">
         {timeLeft}
       </div>
-      {isPrayerRestricted && (
-        <div className="mt-2 text-red-500 text-sm font-medium">
-          {restrictionMessage}
-        </div>
-      )}
     </motion.div>
   );
 };

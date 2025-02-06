@@ -95,12 +95,14 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
         nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
       }
 
-      const diff = nextPrayerTime.getTime() - Date.now();
+      const now = new Date();
+      const diff = nextPrayerTime.getTime() - now.getTime();
+      
       const hoursLeft = Math.floor(diff / (1000 * 60 * 60));
       const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const secondsLeft = Math.floor((diff % (1000 * 60)) / 1000);
 
-      return `${hoursLeft.toString().padStart(2, '0')}:${minutesLeft.toString().padStart(2, '0')}:${secondsLeft.toString().padStart(2, '0')}`;
+      return `${hoursLeft} ${lang === 'tr' ? 'Saat' : 'Stunden'}, ${minutesLeft} ${lang === 'tr' ? 'Dakika' : 'Minuten'}, ${secondsLeft} ${lang === 'tr' ? 'Saniye' : 'Sekunden'}`;
     };
 
     const timer = setInterval(() => {
@@ -112,7 +114,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
     checkPrayerRestrictions();
 
     return () => clearInterval(timer);
-  }, [nextPrayer]);
+  }, [nextPrayer, lang]);
 
   const nextPrayerName = lang === 'tr' 
     ? getPrayerNameInTurkish(nextPrayer.name)
@@ -127,9 +129,9 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
       className={`text-center ${className}`}
     >
       <div className="text-lg font-medium text-white/80 mb-2">
-        {t.nextPrayerLabel}
+        {lang === 'tr' ? "Vaktin Çıkmasına Kalan Süre" : "Verbleibende Zeit bis zum nächsten Gebet"}
       </div>
-      <div className="text-5xl font-light tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9] mb-3">
+      <div className="text-3xl font-light tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9] mb-3">
         {timeLeft}
       </div>
       {isPrayerRestricted && (

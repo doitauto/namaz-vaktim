@@ -29,7 +29,6 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
     getCurrentPosition();
   }, [latitude, longitude]);
 
-  // Fetch nearest location name using reverse geocoding
   useEffect(() => {
     const fetchLocationName = async () => {
       if (!location) return;
@@ -40,7 +39,6 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         );
         const data = await response.json();
         
-        // Use the most specific name available
         const locationName = data.address?.suburb || 
                            data.address?.city_district || 
                            data.address?.town || 
@@ -105,9 +103,39 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         { name: 'Maghrib', arabicName: 'المغرب', time: formatTime(data.data.timings.Maghrib) },
         { name: 'Isha', arabicName: 'العشاء', time: formatTime(data.data.timings.Isha) },
       ] as PrayerTime[];
+
+      // Sortiere die Gebetszeiten basierend auf der aktuellen Zeit
+      const now = new Date();
+      const currentHours = now.getHours();
+      const currentMinutes = now.getMinutes();
+      const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+
+      const sortedPrayerTimes = prayerTimes.map(prayer => {
+        const [hours, minutes] = prayer.time.split(':').map(Number);
+        const prayerTimeInMinutes = hours * 60 + minutes;
+        return {
+          ...prayer,
+          minutesFromMidnight: prayerTimeInMinutes,
+          hasPassedToday: prayerTimeInMinutes <= currentTimeInMinutes
+        };
+      }).sort((a, b) => {
+        // Wenn beide Zeiten vergangen sind oder beide noch nicht, normal sortieren
+        if (a.hasPassedToday === b.hasPassedToday) {
+          return a.minutesFromMidnight - b.minutesFromMidnight;
+        }
+        // Wenn eine Zeit vergangen ist und die andere nicht, die nicht vergangene zuerst
+        return a.hasPassedToday ? 1 : -1;
+      });
+
+      // Entferne die zusätzlichen Eigenschaften vor der Rückgabe
+      const cleanedPrayerTimes = sortedPrayerTimes.map(({ name, arabicName, time }) => ({
+        name,
+        arabicName,
+        time
+      }));
       
       return {
-        prayerTimes,
+        prayerTimes: cleanedPrayerTimes,
         hijriDate: `${data.data.date.hijri.day} ${data.data.date.hijri.month.en} ${data.data.date.hijri.year}`,
       };
     },

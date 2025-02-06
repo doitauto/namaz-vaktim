@@ -20,53 +20,53 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
 
   useEffect(() => {
     const calculateTimeLeft = () => {
+      // Aktuelle Zeit
       const now = new Date();
-      const currentHours = now.getHours();
-      const currentMinutes = now.getMinutes();
-      const currentSeconds = now.getSeconds();
-
-      // Parse next prayer time
-      const [prayerHours, prayerMinutes] = nextPrayer.time.split(':').map(Number);
       
-      // Calculate difference
-      let diffHours = prayerHours - currentHours;
-      let diffMinutes = prayerMinutes - currentMinutes;
-      let diffSeconds = 0 - currentSeconds;
+      // Finde die nächste Gebetszeit
+      let nextPrayerTime: Date | null = null;
+      let targetPrayer = nextPrayer;
 
-      // Adjust for negative differences
-      if (diffSeconds < 0) {
-        diffSeconds += 60;
-        diffMinutes--;
-      }
-      if (diffMinutes < 0) {
-        diffMinutes += 60;
-        diffHours--;
-      }
-      
-      // If the prayer time has already passed today
-      if (diffHours < 0) {
-        // Find the first prayer time of the next day
-        const firstPrayerTime = prayerTimes[0];
-        const [firstPrayerHours, firstPrayerMinutes] = firstPrayerTime.time.split(':').map(Number);
-        
-        // Calculate hours until midnight plus hours until first prayer
-        diffHours = (24 - currentHours) + firstPrayerHours;
-        diffMinutes = firstPrayerMinutes - currentMinutes;
-        diffSeconds = 0 - currentSeconds;
+      // Konvertiere die Gebetszeit in ein Date-Objekt für heute
+      const [targetHours, targetMinutes] = targetPrayer.time.split(':').map(Number);
+      nextPrayerTime = new Date(now);
+      nextPrayerTime.setHours(targetHours, targetMinutes, 0, 0);
 
-        // Adjust minutes and seconds again
-        if (diffSeconds < 0) {
-          diffSeconds += 60;
-          diffMinutes--;
-        }
-        if (diffMinutes < 0) {
-          diffMinutes += 60;
-          diffHours--;
+      // Wenn die Zeit bereits vorbei ist und wir weitere Gebetszeiten haben
+      if (nextPrayerTime < now && prayerTimes.length > 0) {
+        // Suche die nächste verfügbare Gebetszeit heute
+        const futureTime = prayerTimes.find(prayer => {
+          const [hours, minutes] = prayer.time.split(':').map(Number);
+          const prayerTime = new Date(now);
+          prayerTime.setHours(hours, minutes, 0, 0);
+          return prayerTime > now;
+        });
+
+        if (futureTime) {
+          // Nehme die nächste Gebetszeit heute
+          const [hours, minutes] = futureTime.time.split(':').map(Number);
+          nextPrayerTime = new Date(now);
+          nextPrayerTime.setHours(hours, minutes, 0, 0);
+        } else {
+          // Wenn keine weitere Gebetszeit heute, nehme die erste Gebetszeit morgen
+          const firstPrayer = prayerTimes[0];
+          const [hours, minutes] = firstPrayer.time.split(':').map(Number);
+          nextPrayerTime = new Date(now);
+          nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
+          nextPrayerTime.setHours(hours, minutes, 0, 0);
         }
       }
 
-      // Format the time left
-      return `${String(diffHours).padStart(2, '0')}:${String(diffMinutes).padStart(2, '0')}:${String(diffSeconds).padStart(2, '0')}`;
+      // Berechne die Zeitdifferenz
+      const diff = nextPrayerTime.getTime() - now.getTime();
+      
+      // Konvertiere in Stunden, Minuten und Sekunden
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      // Formatiere die Zeit
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
     const timer = setInterval(() => {

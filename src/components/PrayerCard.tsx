@@ -52,19 +52,19 @@ const getPrayerNameInGerman = (name: string): string => {
 const getIcon = (name: string) => {
   switch (name.toLowerCase()) {
     case 'fajr':
-      return <Sunrise className="h-7 w-7" />;
+      return <Sunrise className="h-6 w-6" />;
     case 'sunrise':
-      return <Sun className="h-7 w-7" />;
+      return <Sun className="h-6 w-6" />;
     case 'dhuhr':
-      return <Sun className="h-7 w-7" />;
+      return <Sun className="h-6 w-6" />;
     case 'asr':
-      return <CloudSun className="h-7 w-7" />;
+      return <CloudSun className="h-6 w-6" />;
     case 'maghrib':
-      return <Moon className="h-7 w-7" />;
+      return <Moon className="h-6 w-6" />;
     case 'isha':
-      return <Moon className="h-7 w-7" />;
+      return <Moon className="h-6 w-6" />;
     default:
-      return <Clock className="h-7 w-7" />;
+      return <Clock className="h-6 w-6" />;
   }
 };
 
@@ -83,34 +83,34 @@ export const PrayerCard = ({ prayer, isNext, index, lang = 'tr' }: PrayerCardPro
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
       className={`
-        w-full max-w-md mx-auto
-        ${prayer.isCurrentPrayer 
-          ? 'bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9] shadow-lg shadow-[#8B5CF6]/20'
-          : 'bg-white/5 hover:bg-white/10 transition-colors duration-300'
-        }
-        backdrop-blur-md rounded-xl p-4 border border-white/10
+        relative bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 
+        transition-all duration-300 group hover:bg-white/10
+        ${prayer.isCurrentPrayer ? 'ring-2 ring-blue-500' : ''}
       `}
     >
-      <div className="flex items-center justify-between space-x-4">
-        <div className="flex items-center space-x-4">
-          <div className={`${prayer.isCurrentPrayer ? 'text-white' : 'text-white/80'} p-3 rounded-lg bg-white/5`}>
+      <div className="absolute bottom-0 left-0 h-full w-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 
+        rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      <div className="relative p-4 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="p-2 bg-white/5 rounded-lg group-hover:bg-white/10 transition-colors">
             {getIcon(prayer.name)}
           </div>
           <div>
-            <h3 className="text-lg font-medium text-white/90">
-              {displayName}
-            </h3>
-            <p className={`text-2xl font-bold ${prayer.isCurrentPrayer ? 'text-white' : 'text-white/80'}`}>
-              {prayer.time}
-            </p>
+            <div className="font-medium text-white/90">{displayName}</div>
+            {prayer.isNext && (
+              <div className="text-sm text-blue-300">{t.nextPrayer}</div>
+            )}
           </div>
         </div>
-        {prayer.isNext && (
-          <div className="px-3 py-1 rounded-full bg-white/10 text-sm text-white">
-            {t.nextPrayer}
-          </div>
-        )}
+        <div className="text-2xl font-bold text-blue-300 group-hover:text-white transition-colors">
+          {prayer.time}
+        </div>
       </div>
+      
+      {prayer.isCurrentPrayer && (
+        <div className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 w-full" />
+      )}
     </motion.div>
   );
 };

@@ -9,8 +9,8 @@ interface LocationInfoProps {
 
 export const LocationInfo = ({ city, parentLocation, hijriDate }: LocationInfoProps) => {
   return (
-    <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 overflow-hidden relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5" />
+    <div className="backdrop-blur-xl rounded-3xl p-8 border border-white/10 overflow-hidden relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-800/50 to-slate-900/50" />
       
       <div className="relative flex justify-between items-start">
         <div>

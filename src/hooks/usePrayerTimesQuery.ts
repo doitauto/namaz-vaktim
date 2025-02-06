@@ -47,7 +47,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
                 longitude: longitude.toString(),
                 method: '13',
                 shafaq: 'general',
-                tune: '0,0,0,5,0,6,6,0,0', // Feinabstimmung für Lonsee basierend auf Diyanet (Anpassung für Maghrib/Isha)
+                tune: '11,1,-7,5,-34,6,6,-7,-6',
                 school: '1',
                 midnightMode: '0',
                 timezonestring: 'Europe/Berlin',

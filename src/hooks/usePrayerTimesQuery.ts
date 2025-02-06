@@ -40,10 +40,20 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
         try {
           const batchResults = await Promise.all(
             batch.map(async (date) => {
-              const formattedDate = formatDate(date.toISOString());
+              // Format date as YYYY-MM-DD
+              const formattedDate = date.toISOString().split('T')[0];
               
+              // Diyanet API requires coordinates in DDMM format
+              const latDeg = Math.floor(Math.abs(latitude));
+              const latMin = Math.round((Math.abs(latitude) - latDeg) * 60);
+              const lonDeg = Math.floor(Math.abs(longitude));
+              const lonMin = Math.round((Math.abs(longitude) - lonDeg) * 60);
+
+              const latStr = `${latDeg.toString().padStart(2, '0')}${latMin.toString().padStart(2, '0')}N`;
+              const lonStr = `${lonDeg.toString().padStart(3, '0')}${lonMin.toString().padStart(2, '0')}E`;
+
               const response = await fetch(
-                `https://awqatsalah.diyanet.gov.tr/service/getawqatbycoordinate/${latitude}/${longitude}/${formattedDate}`
+                `https://namazapi.diyanet.gov.tr/api/PrayerTimes/${latStr}/${lonStr}/${formattedDate}`
               );
 
               if (!response.ok) {
@@ -53,12 +63,12 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
               const data = await response.json();
               return {
                 date: formatDate(date.toISOString()),
-                fajr: data.Fajr,
-                sunrise: data.Sunrise,
-                dhuhr: data.Dhuhr,
-                asr: data.Asr,
-                maghrib: data.Maghrib,
-                isha: data.Isha
+                fajr: data.Imsak,
+                sunrise: data.Gunes,
+                dhuhr: data.Ogle,
+                asr: data.Ikindi,
+                maghrib: data.Aksam,
+                isha: data.Yatsi
               };
             })
           );

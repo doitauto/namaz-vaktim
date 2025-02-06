@@ -47,10 +47,12 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
 
       try {
         // 1. Authentifizierung
-        const authResponse = await fetch(`${API_BASE_URL}/Auth/Login`, {
+        const authResponse = await fetch(`${API_BASE_URL}/Auth/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Origin': window.location.origin
           },
           body: JSON.stringify({
             email: "guest@diyanet.gov.tr",
@@ -59,6 +61,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
         });
 
         if (!authResponse.ok) {
+          console.error('Auth response:', await authResponse.text());
           throw new Error('Authentication failed');
         }
 
@@ -95,12 +98,15 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
                   `${API_BASE_URL}/PrayerTime/Daily/${latitude},${longitude}/${formattedDate}`,
                   {
                     headers: {
-                      'Authorization': `Bearer ${accessToken}`
+                      'Authorization': `Bearer ${accessToken}`,
+                      'Accept': 'application/json',
+                      'Origin': window.location.origin
                     }
                   }
                 );
 
                 if (!response.ok) {
+                  console.error('Prayer time response:', await response.text());
                   throw new Error(`HTTP error! status: ${response.status}`);
                 }
 

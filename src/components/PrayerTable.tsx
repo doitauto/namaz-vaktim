@@ -3,7 +3,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { ExtendedPrayerTime, TimeRange } from "@/lib/types";
 import { FileDown, FileSpreadsheet } from "lucide-react";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -75,7 +74,13 @@ export const PrayerTable = ({ timeRange, lang, latitude, longitude }: PrayerTabl
             latitude: latitude.toString(),
             longitude: longitude.toString(),
             method: '13',
+            shafaq: 'general',
+            tune: '11,1,-7,5,-34,6,6,-7,-6',
             school: '1',
+            midnightMode: '0',
+            timezonestring: 'Europe/Berlin',
+            latitudeAdjustmentMethod: '1',
+            calendarMethod: 'DIYANET',
             adjustment: '1'
           });
 
@@ -197,3 +202,4 @@ export const PrayerTable = ({ timeRange, lang, latitude, longitude }: PrayerTabl
     </div>
   );
 };
+

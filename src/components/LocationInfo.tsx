@@ -1,5 +1,5 @@
 
-import { MapPin, Calendar, Cloud } from 'lucide-react';
+import { MapPin, Calendar } from 'lucide-react';
 
 interface LocationInfoProps {
   city: string;
@@ -7,7 +7,7 @@ interface LocationInfoProps {
   hijriDate: string;
 }
 
-export const LocationInfo = ({ city, parentLocation, hijriDate }: LocationInfoProps) => {
+export const LocationInfo = ({ city, hijriDate }: LocationInfoProps) => {
   return (
     <div className="backdrop-blur-xl rounded-3xl p-8 border border-white/10 overflow-hidden relative">
       <div className="absolute inset-0 bg-gradient-to-br from-slate-800/50 to-slate-900/50" />
@@ -20,18 +20,15 @@ export const LocationInfo = ({ city, parentLocation, hijriDate }: LocationInfoPr
           <div className="flex items-center gap-2 mt-2">
             <MapPin className="w-4 h-4 text-blue-400" />
             <span className="text-sm text-blue-300">
-              {city} {parentLocation && `(${parentLocation})`}
+              {city}
             </span>
           </div>
         </div>
         <div className="text-right">
           <div className="text-sm text-blue-300">{hijriDate}</div>
-          <div className="flex items-center gap-2 mt-2 text-xs text-blue-400">
-            <Cloud className="w-4 h-4" />
-            <span>13°C</span>
-          </div>
         </div>
       </div>
     </div>
   );
 };
+

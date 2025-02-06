@@ -54,22 +54,43 @@ const Qibla = () => {
   useEffect(() => {
     getLocation();
 
-    const handleOrientation = (event: DeviceOrientationEvent) => {
-      if (event.alpha !== null) {
-        setDeviceOrientation(event.alpha);
+    const requestPermission = async () => {
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        try {
+          const permissionState = await DeviceOrientationEvent.requestPermission();
+          if (permissionState === 'granted') {
+            window.addEventListener('deviceorientation', handleOrientation);
+          } else {
+            toast({
+              title: "Zugriff verweigert",
+              description: "Bitte erlauben Sie den Zugriff auf den Kompass in den Einstellungen.",
+              variant: "destructive",
+            });
+          }
+        } catch (error) {
+          console.error('Fehler bei der Berechtigungsanfrage:', error);
+        }
+      } else {
+        window.addEventListener('deviceorientation', handleOrientation);
       }
     };
 
-    if (typeof DeviceOrientationEvent !== 'undefined') {
-      window.addEventListener('deviceorientation', handleOrientation);
-    }
+    const handleOrientation = (event: DeviceOrientationEvent) => {
+      if (event.webkitCompassHeading) {
+        // iOS devices
+        setDeviceOrientation(event.webkitCompassHeading);
+      } else if (event.alpha !== null) {
+        // Android devices
+        setDeviceOrientation(360 - event.alpha);
+      }
+    };
+
+    requestPermission();
 
     return () => {
-      if (typeof DeviceOrientationEvent !== 'undefined') {
-        window.removeEventListener('deviceorientation', handleOrientation);
-      }
+      window.removeEventListener('deviceorientation', handleOrientation);
     };
-  }, []);
+  }, [toast]);
 
   if (loading) {
     return (

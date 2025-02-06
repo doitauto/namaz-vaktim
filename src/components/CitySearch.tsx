@@ -26,12 +26,10 @@ export const CitySearch = ({ onCitySelect }: CitySearchProps) => {
       return;
     }
 
-    // Clear previous timeout
     if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
     }
 
-    // Set new timeout to prevent too many API calls
     searchTimeout.current = setTimeout(async () => {
       setIsSearching(true);
       try {
@@ -66,7 +64,7 @@ export const CitySearch = ({ onCitySelect }: CitySearchProps) => {
         console.error('Error searching city:', error);
       }
       setIsSearching(false);
-    }, 300); // Delay for 300ms after typing stops
+    }, 300);
 
     return () => {
       if (searchTimeout.current) {
@@ -84,39 +82,32 @@ export const CitySearch = ({ onCitySelect }: CitySearchProps) => {
 
   return (
     <div className="flex gap-2 relative">
-      <Popover open={open && suggestions.length > 0} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Input
-            placeholder="Stadt suchen..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 bg-white/10 border-[#0EA5E9]/30 text-white placeholder:text-white/50 focus:border-[#0EA5E9] transition-all duration-300"
-          />
-        </PopoverTrigger>
-        <PopoverContent className="p-0 w-full" align="start">
-          <Command>
-            <CommandGroup>
-              {suggestions.map((city, index) => (
-                <CommandItem
-                  key={index}
-                  value={city.name}
-                  onSelect={() => handleSelectCity(city)}
-                  className="cursor-pointer hover:bg-[#0EA5E9]/10"
-                >
-                  {city.name}, {city.country}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </Command>
-        </PopoverContent>
-      </Popover>
+      <Input
+        placeholder="Stadt suchen..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="flex-1 bg-white/10 border-[#0EA5E9]/30 text-white placeholder:text-white/50 focus:border-[#0EA5E9] transition-all duration-300"
+      />
       <Button 
-        onClick={() => handleSelectCity(suggestions[0])}
+        onClick={() => suggestions.length > 0 && handleSelectCity(suggestions[0])}
         disabled={isSearching || suggestions.length === 0}
         className="bg-[#0EA5E9]/20 border border-[#0EA5E9]/30 text-white hover:bg-[#0EA5E9]/30 hover:border-[#0EA5E9] transition-all duration-300"
       >
         <Search className="h-4 w-4" />
       </Button>
+      {suggestions.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-auto z-50">
+          {suggestions.map((city, index) => (
+            <div
+              key={index}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-800"
+              onClick={() => handleSelectCity(city)}
+            >
+              {city.name}, {city.country}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

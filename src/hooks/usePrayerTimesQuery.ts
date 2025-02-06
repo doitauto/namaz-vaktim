@@ -34,7 +34,6 @@ interface DiyanetPrayerTimeResponse {
   message: string | null;
 }
 
-// API-Basis-URL für die Diyanet Prayer Times API
 const API_BASE_URL = "https://awqatsalah.diyanet.gov.tr/api/v1";
 
 export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePrayerTimesQueryProps) => {
@@ -46,8 +45,8 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
       if (!latitude || !longitude) return [];
 
       try {
-        // 1. Authentifizierung
-        const authResponse = await fetch(`${API_BASE_URL}/Auth/login`, {
+        // 1. Authentication
+        const authResponse = await fetch(`${API_BASE_URL}/auth/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -68,7 +67,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
         const authData: DiyanetAuthResponse = await authResponse.json();
         const accessToken = authData.data.accessToken;
 
-        // 2. Gebetszeiten abrufen
+        // 2. Get prayer times
         const days = getDaysToFetch(timeRange);
         const dates = Array.from({ length: days }, (_, i) => {
           const date = new Date();
@@ -78,7 +77,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
 
         const results: ExtendedPrayerTime[] = [];
 
-        // Batch requests für Gebetszeiten
+        // Batch requests for prayer times
         const batchSize = 5;
         let failedRequests = 0;
 
@@ -95,7 +94,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
                 const formattedDate = date.toISOString().split('T')[0];
                 
                 const response = await fetch(
-                  `${API_BASE_URL}/PrayerTime/Daily/${latitude},${longitude}/${formattedDate}`,
+                  `${API_BASE_URL}/prayertime/daily/${latitude},${longitude}/${formattedDate}`,
                   {
                     headers: {
                       'Authorization': `Bearer ${accessToken}`,

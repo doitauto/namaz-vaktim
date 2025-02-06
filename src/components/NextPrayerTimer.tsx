@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Timer } from 'lucide-react';
 import { PrayerTime } from '@/lib/types';
@@ -102,7 +101,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
       const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const secondsLeft = Math.floor((diff % (1000 * 60)) / 1000);
 
-      return `${hoursLeft} ${lang === 'tr' ? 'Saat' : 'Stunden'}, ${minutesLeft} ${lang === 'tr' ? 'Dakika' : 'Minuten'}, ${secondsLeft} ${lang === 'tr' ? 'Saniye' : 'Sekunden'}`;
+      return `${String(hoursLeft).padStart(2, '0')}:${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
     };
 
     const timer = setInterval(() => {

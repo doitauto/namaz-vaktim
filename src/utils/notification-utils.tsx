@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { PrayerTime } from '@/lib/types';
 import { UseToastResult } from '@/components/ui/use-toast';
 
@@ -36,3 +37,4 @@ export const getNotificationMessages = (lang: string) => {
       : "30 Minuten vor dem Mittagsgebet darf kein Gebet verrichtet werden.",
   };
 };
+

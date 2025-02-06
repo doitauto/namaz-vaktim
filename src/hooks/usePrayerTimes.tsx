@@ -97,14 +97,35 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         }
       };
 
-      const prayerTimes = [
-        { name: 'Fajr', arabicName: 'الفجر', time: formatTime(data.data.timings.Fajr) },
-        { name: 'Sunrise', arabicName: 'الشروق', time: formatTime(data.data.timings.Sunrise) },
-        { name: 'Dhuhr', arabicName: 'الظهر', time: formatTime(data.data.timings.Dhuhr) },
-        { name: 'Asr', arabicName: 'العصر', time: formatTime(data.data.timings.Asr) },
-        { name: 'Maghrib', arabicName: 'المغرب', time: formatTime(data.data.timings.Maghrib) },
-        { name: 'Isha', arabicName: 'العشاء', time: formatTime(data.data.timings.Isha) },
-      ] as PrayerTime[];
+      const prayerOrder = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+      const now = new Date();
+      const currentHours = now.getHours();
+      const currentMinutes = now.getMinutes();
+      const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+
+      const prayerTimes = prayerOrder.map(name => {
+        const time = formatTime(data.data.timings[name]);
+        const [hours, minutes] = time.split(':').map(Number);
+        const timeInMinutes = hours * 60 + minutes;
+        
+        return {
+          name,
+          arabicName: name === 'Fajr' ? 'الفجر' :
+                     name === 'Sunrise' ? 'الشروق' :
+                     name === 'Dhuhr' ? 'الظهر' :
+                     name === 'Asr' ? 'العصر' :
+                     name === 'Maghrib' ? 'المغرب' :
+                     'العشاء',
+          time,
+          isCurrentPrayer: timeInMinutes <= currentTimeInMinutes && 
+            (name === prayerOrder[prayerOrder.length - 1] || 
+             timeInMinutes > (prayerOrder[prayerOrder.indexOf(name) + 1] ? 
+               formatTime(data.data.timings[prayerOrder[prayerOrder.indexOf(name) + 1]])
+                 .split(':')
+                 .map(Number)
+                 .reduce((acc, curr, idx) => idx === 0 ? curr * 60 : acc + curr, 0) : Infinity))
+        };
+      }) as PrayerTime[];
       
       return {
         prayerTimes,

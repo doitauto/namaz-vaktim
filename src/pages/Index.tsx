@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -174,7 +173,12 @@ const Index = () => {
             </Button>
           </div>
           
-          <PrayerTable timeRange={timeRange} lang={language} />
+          <PrayerTable 
+            timeRange={timeRange} 
+            lang={language} 
+            latitude={selectedCity?.latitude || location?.lat}
+            longitude={selectedCity?.longitude || location?.lng}
+          />
         </div>
 
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C]/95 to-transparent">

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -13,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Link } from 'react-router-dom';
 import { getTranslation } from '@/lib/translations';
+import { PrayerTable } from '@/components/PrayerTable';
+import { TimeRange } from '@/lib/types';
 
 const STORAGE_KEY = 'saved-prayer-locations';
 
@@ -20,6 +21,7 @@ const Index = () => {
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
   const [language, setLanguage] = useState<'tr' | 'de'>('tr');
+  const [timeRange, setTimeRange] = useState<TimeRange>('weekly');
   const { toast } = useToast();
   const t = getTranslation(language);
   
@@ -145,6 +147,34 @@ const Index = () => {
           city={selectedCity?.name || nearestLocation} 
           hijriDate={hijriDate}
         />
+
+        <div className="mt-8">
+          <div className="flex gap-2 mb-4">
+            <Button
+              variant="ghost"
+              className={`flex-1 ${timeRange === 'weekly' ? 'bg-white/10' : 'bg-white/5'} text-white/70 hover:text-white`}
+              onClick={() => setTimeRange('weekly')}
+            >
+              {language === 'tr' ? 'Haftalık' : 'Wöchentlich'}
+            </Button>
+            <Button
+              variant="ghost"
+              className={`flex-1 ${timeRange === 'monthly' ? 'bg-white/10' : 'bg-white/5'} text-white/70 hover:text-white`}
+              onClick={() => setTimeRange('monthly')}
+            >
+              {language === 'tr' ? 'Aylık' : 'Monatlich'}
+            </Button>
+            <Button
+              variant="ghost"
+              className={`flex-1 ${timeRange === 'yearly' ? 'bg-white/10' : 'bg-white/5'} text-white/70 hover:text-white`}
+              onClick={() => setTimeRange('yearly')}
+            >
+              {language === 'tr' ? 'Yıllık' : 'Jährlich'}
+            </Button>
+          </div>
+          
+          <PrayerTable timeRange={timeRange} lang={language} />
+        </div>
 
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C]/95 to-transparent">
           <div className="max-w-2xl mx-auto p-4">

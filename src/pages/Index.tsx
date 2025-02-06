@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -105,6 +106,10 @@ const Index = () => {
       </div>
 
       <div className="max-w-2xl mx-auto relative z-10">
+        <div className="absolute top-0 left-0 pt-8">
+          <span className="text-white/50 text-sm">Developed by A. Calhan</span>
+        </div>
+
         <div className="absolute top-0 right-0 pt-8">
           <a 
             href="https://ditib-lonsee.de/imsakiye/index.html"
@@ -227,3 +232,4 @@ const Index = () => {
 };
 
 export default Index;
+

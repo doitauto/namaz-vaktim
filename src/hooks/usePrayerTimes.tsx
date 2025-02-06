@@ -40,13 +40,11 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         );
         const data = await response.json();
         
-        // Get the nearest city/town
         const nearestCity = data.address?.city || 
                           data.address?.town ||
                           data.address?.municipality ||
                           'Unbekannter Ort';
         
-        // Get the county/district
         const district = data.address?.county || 
                         data.address?.state_district;
         
@@ -66,24 +64,20 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
     queryKey: ['prayerTimes', location?.lat, location?.lng],
     queryFn: async () => {
       if (!location) return null;
-      
-      const params = new URLSearchParams({
-        latitude: location.lat.toString(),
-        longitude: location.lng.toString(),
-        method: '13',
-        shafaq: 'general',
-        tune: '11,1,-7,5,-34,6,6,-7,-6',
-        school: '1',
-        midnightMode: '0',
-        timezonestring: 'Europe/Berlin',
-        latitudeAdjustmentMethod: '1',
-        calendarMethod: 'DIYANET',
-        adjustment: '1',
-        iso8601: 'true'
-      });
 
+      // Format coordinates for Diyanet API
+      const latDeg = Math.floor(Math.abs(location.lat));
+      const latMin = Math.round((Math.abs(location.lat) - latDeg) * 60);
+      const lonDeg = Math.floor(Math.abs(location.lng));
+      const lonMin = Math.round((Math.abs(location.lng) - lonDeg) * 60);
+
+      const latStr = `${latDeg.toString().padStart(2, '0')}${latMin.toString().padStart(2, '0')}N`;
+      const lonStr = `${lonDeg.toString().padStart(3, '0')}${lonMin.toString().padStart(2, '0')}E`;
+
+      const today = new Date().toISOString().split('T')[0];
+      
       const response = await fetch(
-        `https://api.aladhan.com/v1/timings/${Math.floor(Date.now() / 1000)}?${params.toString()}`
+        `https://namazapi.diyanet.gov.tr/api/PrayerTimes/${latStr}/${lonStr}/${today}`
       );
       
       if (!response.ok) {
@@ -91,17 +85,8 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
       }
 
       const data = await response.json();
-      
-      const formatTime = (timeStr: string) => {
-        try {
-          return timeStr.split('T')[1].substring(0, 5);
-        } catch (e) {
-          console.error('Error formatting time:', e);
-          return timeStr;
-        }
-      };
 
-      const prayerOrder = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+      const prayerOrder = ['Imsak', 'Gunes', 'Ogle', 'Ikindi', 'Aksam', 'Yatsi'];
       const now = new Date();
       const currentHours = now.getHours();
       const currentMinutes = now.getMinutes();
@@ -109,9 +94,8 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
 
       let currentPrayerIndex = -1;
       
-      // Find the current prayer time
       for (let i = prayerOrder.length - 1; i >= 0; i--) {
-        const time = formatTime(data.data.timings[prayerOrder[i]]);
+        const time = data[prayerOrder[i]];
         const [hours, minutes] = time.split(':').map(Number);
         const prayerTimeInMinutes = hours * 60 + minutes;
         
@@ -121,33 +105,39 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         }
       }
 
-      // If no prayer time is found before current time, it means we're after Isha
-      // So the current prayer is still Isha (last prayer of the day)
       if (currentPrayerIndex === -1) {
         currentPrayerIndex = prayerOrder.length - 1;
       }
 
       const prayerTimes = prayerOrder.map((name, index) => {
-        const time = formatTime(data.data.timings[name]);
+        const time = data[name];
         const [hours, minutes] = time.split(':').map(Number);
         const timeInMinutes = hours * 60 + minutes;
         
-        // Set current prayer based on the found index
         const isCurrentPrayer = index === currentPrayerIndex;
-        
-        // Find the next prayer time
-        let isNext = false;
         const nextIndex = (currentPrayerIndex + 1) % prayerOrder.length;
-        isNext = index === nextIndex;
+        const isNext = index === nextIndex;
+
+        // Map Turkish names to English/Arabic
+        const prayerName = 
+          name === 'Imsak' ? 'Fajr' :
+          name === 'Gunes' ? 'Sunrise' :
+          name === 'Ogle' ? 'Dhuhr' :
+          name === 'Ikindi' ? 'Asr' :
+          name === 'Aksam' ? 'Maghrib' :
+          'Isha';
+
+        const arabicName = 
+          name === 'Imsak' ? 'الفجر' :
+          name === 'Gunes' ? 'الشروق' :
+          name === 'Ogle' ? 'الظهر' :
+          name === 'Ikindi' ? 'العصر' :
+          name === 'Aksam' ? 'المغرب' :
+          'العشاء';
 
         return {
-          name,
-          arabicName: name === 'Fajr' ? 'الفجر' :
-                     name === 'Sunrise' ? 'الشروق' :
-                     name === 'Dhuhr' ? 'الظهر' :
-                     name === 'Asr' ? 'العصر' :
-                     name === 'Maghrib' ? 'المغرب' :
-                     'العشاء',
+          name: prayerName,
+          arabicName,
           time,
           isCurrentPrayer,
           isNext
@@ -156,7 +146,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
       
       return {
         prayerTimes,
-        hijriDate: `${data.data.date.hijri.day} ${data.data.date.hijri.month.en} ${data.data.date.hijri.year}`,
+        hijriDate: data.HicriTarih || '',
       };
     },
     enabled: !!location,

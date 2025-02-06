@@ -1,3 +1,4 @@
+
 import { ExtendedPrayerTime, TimeRange } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate, getDaysToFetch } from "@/lib/prayer-utils";
@@ -24,7 +25,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
         return date;
       });
 
-      // Batch requests in groups of 5 (reduced from 10 to minimize server load)
+      // Batch requests in groups of 5
       const batchSize = 5;
       const results: ExtendedPrayerTime[] = [];
       let failedRequests = 0;
@@ -32,7 +33,6 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
       for (let i = 0; i < dates.length; i += batchSize) {
         const batch = dates.slice(i, i + batchSize);
         
-        // Wait 2 seconds between batches (increased from 1 second)
         if (i > 0) {
           await new Promise(resolve => setTimeout(resolve, 2000));
         }
@@ -40,24 +40,20 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
         try {
           const batchResults = await Promise.all(
             batch.map(async (date) => {
-              const timestamp = Math.floor(date.getTime() / 1000);
+              // Format date as YYYY-MM-DD
+              const formattedDate = date.toISOString().split('T')[0];
               
-              const params = new URLSearchParams({
-                latitude: latitude.toString(),
-                longitude: longitude.toString(),
-                method: '13',
-                shafaq: 'general',
-                tune: '11,1,-7,5,-34,6,6,-7,-6',
-                school: '1',
-                midnightMode: '0',
-                timezonestring: 'Europe/Berlin',
-                latitudeAdjustmentMethod: '1',
-                calendarMethod: 'DIYANET',
-                adjustment: '1'
-              });
+              // Diyanet API requires coordinates in DDMM format
+              const latDeg = Math.floor(Math.abs(latitude));
+              const latMin = Math.round((Math.abs(latitude) - latDeg) * 60);
+              const lonDeg = Math.floor(Math.abs(longitude));
+              const lonMin = Math.round((Math.abs(longitude) - lonDeg) * 60);
+
+              const latStr = `${latDeg.toString().padStart(2, '0')}${latMin.toString().padStart(2, '0')}N`;
+              const lonStr = `${lonDeg.toString().padStart(3, '0')}${lonMin.toString().padStart(2, '0')}E`;
 
               const response = await fetch(
-                `https://api.aladhan.com/v1/timings/${timestamp}?${params.toString()}`
+                `https://namazapi.diyanet.gov.tr/api/PrayerTimes/${latStr}/${lonStr}/${formattedDate}`
               );
 
               if (!response.ok) {
@@ -67,12 +63,12 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
               const data = await response.json();
               return {
                 date: formatDate(date.toISOString()),
-                fajr: data.data.timings.Fajr,
-                sunrise: data.data.timings.Sunrise,
-                dhuhr: data.data.timings.Dhuhr,
-                asr: data.data.timings.Asr,
-                maghrib: data.data.timings.Maghrib,
-                isha: data.data.timings.Isha
+                fajr: data.Imsak,
+                sunrise: data.Gunes,
+                dhuhr: data.Ogle,
+                asr: data.Ikindi,
+                maghrib: data.Aksam,
+                isha: data.Yatsi
               };
             })
           );
@@ -82,19 +78,17 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
           console.error(`Error fetching prayer times batch:`, error);
           failedRequests++;
 
-          // If too many failures, show a toast and stop
           if (failedRequests > 3) {
             toast({
               title: "API Error",
-              description: "Too many failed requests. Please try again later.",
+              description: "Zu viele fehlgeschlagene Anfragen. Bitte versuchen Sie es später erneut.",
               variant: "destructive",
             });
-            throw new Error("Too many failed requests");
+            throw new Error("Zu viele fehlgeschlagene Anfragen");
           }
 
-          // Wait a bit longer before retrying
           await new Promise(resolve => setTimeout(resolve, 3000));
-          i -= batchSize; // Retry this batch
+          i -= batchSize; // Diesen Batch erneut versuchen
         }
       }
 
@@ -103,7 +97,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
     enabled: !!latitude && !!longitude,
     retry: 2,
     retryDelay: (attemptIndex) => Math.min(1000 * (2 ** attemptIndex), 30000),
-    staleTime: 1000 * 60 * 60, // Cache for 1 hour
-    gcTime: 1000 * 60 * 60 * 24, // Keep in garbage collection for 24 hours
+    staleTime: 1000 * 60 * 60, // Cache für 1 Stunde
+    gcTime: 1000 * 60 * 60 * 24, // Im Garbage Collection für 24 Stunden behalten
   });
 };

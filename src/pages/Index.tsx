@@ -1,10 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
 import { CitySearch } from '@/components/CitySearch';
 import { LocationButton } from '@/components/LocationButton';
-import { NextPrayerTimer } from '@/components/NextPrayerTimer';
 import { LocationInfo } from '@/components/LocationInfo';
 import { SavedLocations } from '@/components/SavedLocations';
 import { City, SavedLocation } from '@/lib/types';
@@ -15,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { getTranslation } from '@/lib/translations';
 import { PrayerTable } from '@/components/PrayerTable';
 import { TimeRange } from '@/lib/types';
+import { NextPrayerTimer } from '@/components/NextPrayerTimer';
 
 const STORAGE_KEY = 'saved-prayer-locations';
 
@@ -128,16 +127,13 @@ const Index = () => {
           </h1>
           {prayerTimes && prayerTimes.length > 0 && (
             <>
-              <NextPrayerTimer 
-                nextPrayer={prayerTimes[0]} 
-                prayerTimes={prayerTimes}
-                className="inline-block mt-4"
-                lang={language}
-              />
               <LocationInfo 
                 city={selectedCity?.name || nearestLocation}
                 parentLocation={parentLocation}
                 hijriDate={hijriDate}
+                nextPrayer={prayerTimes[0]}
+                prayerTimes={prayerTimes}
+                lang={language}
               />
             </>
           )}

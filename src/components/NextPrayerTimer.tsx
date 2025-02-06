@@ -69,7 +69,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
           title: (
             <div className="flex items-center gap-2 text-[#8B5CF6]">
               <Bell className="h-5 w-5" />
-              <span>{title}</span>
+              {title}
             </div>
           ),
           description: (
@@ -192,7 +192,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
       }
 
       if (currentToastId) {
-        toast.dismiss(currentToastId);
+        useToast().dismiss(currentToastId);
         setCurrentToastId(null);
       }
 
@@ -229,3 +229,4 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
     </motion.div>
   );
 };
+

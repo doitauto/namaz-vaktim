@@ -85,31 +85,50 @@ export const PrayerCard = ({ prayer, isNext, index, lang = 'tr' }: PrayerCardPro
       className={`
         relative bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 
         transition-all duration-300 group hover:bg-white/10
-        ${prayer.isCurrentPrayer ? 'ring-2 ring-blue-500' : ''}
+        ${prayer.isCurrentPrayer ? 'ring-2 ring-[#8B5CF6]' : ''}
       `}
     >
-      <div className="absolute bottom-0 left-0 h-full w-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 
-        rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div 
+        className={`
+          absolute inset-0 rounded-xl transition-opacity duration-300
+          ${prayer.isCurrentPrayer 
+            ? 'bg-gradient-to-r from-[#8B5CF6]/20 to-[#0EA5E9]/20 opacity-100' 
+            : 'bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100'
+          }
+        `}
+      />
       
       <div className="relative p-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="p-2 bg-white/5 rounded-lg group-hover:bg-white/10 transition-colors">
+          <div className={`
+            p-2 rounded-lg transition-colors duration-300
+            ${prayer.isCurrentPrayer 
+              ? 'bg-[#8B5CF6]/20' 
+              : 'bg-white/5 group-hover:bg-white/10'
+            }
+          `}>
             {getIcon(prayer.name)}
           </div>
           <div>
             <div className="font-medium text-white/90">{displayName}</div>
             {prayer.isNext && (
-              <div className="text-sm text-blue-300">{t.nextPrayer}</div>
+              <div className="text-sm text-[#8B5CF6]">{t.nextPrayer}</div>
             )}
           </div>
         </div>
-        <div className="text-2xl font-bold text-blue-300 group-hover:text-white transition-colors">
+        <div className={`
+          text-2xl font-bold transition-colors duration-300
+          ${prayer.isCurrentPrayer 
+            ? 'text-[#8B5CF6]' 
+            : 'text-[#0EA5E9] group-hover:text-white'
+          }
+        `}>
           {prayer.time}
         </div>
       </div>
       
       {prayer.isCurrentPrayer && (
-        <div className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 w-full" />
+        <div className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9] w-full" />
       )}
     </motion.div>
   );

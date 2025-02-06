@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Timer, Bell } from 'lucide-react';
 import { PrayerTime } from '@/lib/types';
@@ -16,7 +17,9 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
   const [timeLeft, setTimeLeft] = useState<string>('');
   const t = getTranslation(lang);
   const { toast } = useToast();
-  const [hasShownNotification, setHasShownNotification] = useState(false);
+  const [hasShownMaghribNotification, setHasMaghribShownNotification] = useState(false);
+  const [hasShownSunriseNotification, setHasSunriseShownNotification] = useState(false);
+  const [hasShownDhuhrNotification, setHasDhuhrShownNotification] = useState(false);
   const [currentToastId, setCurrentToastId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -56,48 +59,141 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
       const currentMinutes = now2.getMinutes();
       const currentTimeInMinutes = currentHours * 60 + currentMinutes;
 
+      // Handle Maghrib notification (45 minutes before)
       const maghribPrayer = prayerTimes.find(prayer => prayer.name === 'Maghrib');
+      const sunrisePrayer = prayerTimes.find(prayer => prayer.name === 'Sunrise');
+      const dhuhrPrayer = prayerTimes.find(prayer => prayer.name === 'Dhuhr');
+      
+      const showNotification = (title: string, message: string, duration: number) => {
+        return toast({
+          title: (
+            <div className="flex items-center gap-2 text-[#8B5CF6]">
+              <Bell className="h-5 w-5" />
+              <span>{title}</span>
+            </div>
+          ),
+          description: (
+            <div className="bg-gradient-to-r from-[#E5DEFF] to-[#F2FCE2] p-3 rounded-lg mt-2 text-gray-700">
+              {message}
+            </div>
+          ),
+          duration: duration,
+          className: "bg-white border-2 border-[#8B5CF6]/20 shadow-lg animate-in slide-in-from-top-full duration-300",
+        });
+      };
       
       if (maghribPrayer) {
         const [maghribHours, maghribMinutes] = maghribPrayer.time.split(':').map(Number);
         const maghribTimeInMinutes = maghribHours * 60 + maghribMinutes;
-        
         const notificationTimeInMinutes = maghribTimeInMinutes - 45;
         
         if (currentTimeInMinutes >= notificationTimeInMinutes && 
             currentTimeInMinutes < maghribTimeInMinutes && 
-            !hasShownNotification) {
+            !hasShownMaghribNotification) {
+          const title = lang === 'tr' ? "Namaz Hatırlatması" : "Gebetsbenachrichtigung";
           const message = lang === 'tr' 
             ? "Akşam namazına 45 dakika kala sadece farz namaz kılınabilir."
             : "45 Minuten vor dem Abendgebet dürfen nur Fard-Gebete verrichtet werden.";
           
-          const toastInstance = toast({
-            title: (
-              <div className="flex items-center gap-2 text-[#8B5CF6]">
-                <Bell className="h-5 w-5" />
-                <span>{lang === 'tr' ? "Namaz Hatırlatması" : "Gebetsbenachrichtigung"}</span>
-              </div>
-            ),
-            description: (
-              <div className="bg-gradient-to-r from-[#E5DEFF] to-[#F2FCE2] p-3 rounded-lg mt-2 text-gray-700">
-                {message}
-              </div>
-            ),
-            duration: (maghribTimeInMinutes - currentTimeInMinutes) * 60 * 1000,
-            className: "bg-white border-2 border-[#8B5CF6]/20 shadow-lg animate-in slide-in-from-top-full duration-300",
-          });
+          const toastInstance = showNotification(
+            title,
+            message,
+            (maghribTimeInMinutes - currentTimeInMinutes) * 60 * 1000
+          );
           
-          setCurrentToastId(toastInstance.id);
-          setHasShownNotification(true);
-        }
-        
-        if (currentTimeInMinutes >= maghribTimeInMinutes) {
-          setHasShownNotification(false);
-          if (currentToastId) {
-            toast.dismiss(currentToastId);
-            setCurrentToastId(null);
+          if (toastInstance) {
+            setCurrentToastId(toastInstance.id);
+            setHasMaghribShownNotification(true);
           }
         }
+      }
+
+      // Handle Sunrise notification
+      if (sunrisePrayer) {
+        const [sunriseHours, sunriseMinutes] = sunrisePrayer.time.split(':').map(Number);
+        const sunriseTimeInMinutes = sunriseHours * 60 + sunriseMinutes;
+        const sunriseEndMinutes = sunriseTimeInMinutes + 45;
+        
+        if (currentTimeInMinutes >= sunriseTimeInMinutes && 
+            currentTimeInMinutes < sunriseEndMinutes && 
+            !hasShownSunriseNotification) {
+          const title = lang === 'tr' ? "Namaz Hatırlatması" : "Gebetsbenachrichtigung";
+          const message = lang === 'tr' 
+            ? "Güneş doğduktan sonraki 45 dakika boyunca namaz kılınmaz."
+            : "In den ersten 45 Minuten nach Sonnenaufgang darf kein Gebet verrichtet werden.";
+          
+          const toastInstance = showNotification(
+            title,
+            message,
+            (sunriseEndMinutes - currentTimeInMinutes) * 60 * 1000
+          );
+          
+          if (toastInstance) {
+            setCurrentToastId(toastInstance.id);
+            setHasSunriseShownNotification(true);
+          }
+        }
+      }
+
+      // Handle Dhuhr notification (30 minutes before)
+      if (dhuhrPrayer) {
+        const [dhuhrHours, dhuhrMinutes] = dhuhrPrayer.time.split(':').map(Number);
+        const dhuhrTimeInMinutes = dhuhrHours * 60 + dhuhrMinutes;
+        const notificationTimeInMinutes = dhuhrTimeInMinutes - 30;
+        
+        if (currentTimeInMinutes >= notificationTimeInMinutes && 
+            currentTimeInMinutes < dhuhrTimeInMinutes && 
+            !hasShownDhuhrNotification) {
+          const title = lang === 'tr' ? "Namaz Hatırlatması" : "Gebetsbenachrichtigung";
+          const message = lang === 'tr' 
+            ? "Öğle namazına 30 dakika kala namaz kılınmaz."
+            : "30 Minuten vor dem Mittagsgebet darf kein Gebet verrichtet werden.";
+          
+          const toastInstance = showNotification(
+            title,
+            message,
+            (dhuhrTimeInMinutes - currentTimeInMinutes) * 60 * 1000
+          );
+          
+          if (toastInstance) {
+            setCurrentToastId(toastInstance.id);
+            setHasDhuhrShownNotification(true);
+          }
+        }
+      }
+
+      // Reset notifications at appropriate times
+      if (maghribPrayer) {
+        const [maghribHours, maghribMinutes] = maghribPrayer.time.split(':').map(Number);
+        const maghribTimeInMinutes = maghribHours * 60 + maghribMinutes;
+        
+        if (currentTimeInMinutes >= maghribTimeInMinutes) {
+          setHasMaghribShownNotification(false);
+        }
+      }
+
+      if (sunrisePrayer) {
+        const [sunriseHours, sunriseMinutes] = sunrisePrayer.time.split(':').map(Number);
+        const sunriseTimeInMinutes = sunriseHours * 60 + sunriseMinutes;
+        const sunriseEndMinutes = sunriseTimeInMinutes + 45;
+        
+        if (currentTimeInMinutes >= sunriseEndMinutes) {
+          setHasSunriseShownNotification(false);
+        }
+      }
+
+      if (dhuhrPrayer) {
+        const [dhuhrHours, dhuhrMinutes] = dhuhrPrayer.time.split(':').map(Number);
+        const dhuhrTimeInMinutes = dhuhrHours * 60 + dhuhrMinutes;
+        
+        if (currentTimeInMinutes >= dhuhrTimeInMinutes) {
+          setHasDhuhrShownNotification(false);
+        }
+      }
+
+      if (currentToastId) {
+        toast.dismiss(currentToastId);
+        setCurrentToastId(null);
       }
 
       const diff = nextPrayerTime.getTime() - now.getTime();
@@ -116,7 +212,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
     setTimeLeft(calculateTimeLeft());
 
     return () => clearInterval(timer);
-  }, [nextPrayer, prayerTimes, toast, lang, hasShownNotification, currentToastId]);
+  }, [nextPrayer, prayerTimes, toast, lang, hasShownMaghribNotification, hasShownSunriseNotification, hasShownDhuhrNotification, currentToastId]);
 
   return (
     <motion.div
@@ -132,42 +228,4 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
       </div>
     </motion.div>
   );
-};
-
-const getPrayerNameInTurkish = (name: string): string => {
-  switch (name.toLowerCase()) {
-    case 'fajr':
-      return 'İmsak';
-    case 'sunrise':
-      return 'Güneş';
-    case 'dhuhr':
-      return 'Öğle';
-    case 'asr':
-      return 'İkindi';
-    case 'maghrib':
-      return 'Akşam';
-    case 'isha':
-      return 'Yatsı';
-    default:
-      return name;
-  }
-};
-
-const getPrayerNameInGerman = (name: string): string => {
-  switch (name.toLowerCase()) {
-    case 'fajr':
-      return 'Morgengebet';
-    case 'sunrise':
-      return 'Sonnenaufgang';
-    case 'dhuhr':
-      return 'Mittagsgebet';
-    case 'asr':
-      return 'Nachmittagsgebet';
-    case 'maghrib':
-      return 'Abendgebet';
-    case 'isha':
-      return 'Nachtgebet';
-    default:
-      return name;
-  }
 };

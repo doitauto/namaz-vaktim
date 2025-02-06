@@ -40,22 +40,28 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         );
         const data = await response.json();
         
-        // Get immediate location (suburb, district, etc.)
-        const immediateLocation = data.address?.suburb || 
-                                data.address?.city_district || 
-                                data.address?.town || 
-                                data.address?.city || 
-                                data.address?.village || 
+        // Get immediate location (village, suburb, etc.)
+        const immediateLocation = data.address?.village || 
+                                data.address?.suburb || 
+                                data.address?.hamlet ||
+                                data.address?.neighbourhood ||
                                 'Unbekannter Ort';
         
-        // Get parent location (city, state, etc.)
-        const parent = data.address?.city || 
-                      data.address?.county ||
-                      data.address?.state ||
-                      '';
+        // Get nearest larger city/town and district
+        const nearestCity = data.address?.city || 
+                          data.address?.town ||
+                          data.address?.municipality;
+        
+        const district = data.address?.county || 
+                        data.address?.state_district;
+        
+        // Combine nearest city and district
+        const parentLocationText = nearestCity && district 
+          ? `${nearestCity} (${district})`
+          : nearestCity || district || '';
                            
         setNearestLocation(immediateLocation);
-        setParentLocation(parent);
+        setParentLocation(parentLocationText);
       } catch (error) {
         console.error('Error fetching location name:', error);
         setNearestLocation('Unbekannter Ort');

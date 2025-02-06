@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -148,6 +149,11 @@ const Index = () => {
           hijriDate={hijriDate}
         />
 
+        <div className="space-y-2 mb-4">
+          <LocationButton onLocationRequest={handleLocationRequest} />
+          <CitySearch onCitySelect={setSelectedCity} />
+        </div>
+
         <div className="mt-8 mb-32">
           <div className="flex gap-2 mb-4">
             <Button
@@ -183,7 +189,7 @@ const Index = () => {
 
         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#1A1F2C] via-[#1A1F2C]/95 to-transparent">
           <div className="max-w-2xl mx-auto p-4">
-            <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center justify-between gap-2">
               <Link 
                 to="/qibla"
                 className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center py-4 rounded-xl transition-all duration-300"
@@ -212,11 +218,6 @@ const Index = () => {
               >
                 <Languages className="h-6 w-6" />
               </button>
-            </div>
-
-            <div className="space-y-2">
-              <LocationButton onLocationRequest={handleLocationRequest} />
-              <CitySearch onCitySelect={setSelectedCity} />
             </div>
           </div>
         </div>

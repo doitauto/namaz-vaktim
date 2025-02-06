@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Geolocation } from '@capacitor/geolocation';
 import { PrayerTime } from '@/lib/types';
@@ -113,21 +112,27 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         
         // Finde die nächste Gebetszeit
         let isNext = false;
+
+        // Konvertiere die aktuelle Zeit und die Gebetszeit in Minuten seit Mitternacht
+        const prayerTimeInMinutes = hours * 60 + minutes;
         
-        // Konvertiere alle Zeiten in Minuten für den Vergleich
-        const allTimes = prayerOrder.map(pName => {
-          const pTime = formatTime(data.data.timings[pName]);
-          const [h, m] = pTime.split(':').map(Number);
-          return h * 60 + m;
-        });
-        
-        // Finde die nächste Gebetszeit
-        const currentTimeIndex = allTimes.findIndex(t => t > currentTimeInMinutes);
-        if (currentTimeIndex === -1) {
-          // Wenn keine spätere Zeit heute gefunden wurde, ist die erste Zeit des nächsten Tages die nächste
-          isNext = index === 0;
-        } else {
-          isNext = index === currentTimeIndex;
+        if (currentTimeInMinutes < prayerTimeInMinutes) {
+          // Wenn die Gebetszeit später am selben Tag ist
+          const nextPrayerIndex = prayerOrder.findIndex(p => {
+            const t = formatTime(data.data.timings[p]);
+            const [h, m] = t.split(':').map(Number);
+            return (h * 60 + m) > currentTimeInMinutes;
+          });
+          isNext = index === nextPrayerIndex;
+        } else if (index === 0 && currentTimeInMinutes >= prayerTimeInMinutes) {
+          // Wenn es nach der letzten Gebetszeit des Tages ist, ist Fajr die nächste
+          const lastPrayerTime = formatTime(data.data.timings[prayerOrder[prayerOrder.length - 1]]);
+          const [lastHours, lastMinutes] = lastPrayerTime.split(':').map(Number);
+          const lastPrayerTimeInMinutes = lastHours * 60 + lastMinutes;
+          
+          if (currentTimeInMinutes >= lastPrayerTimeInMinutes) {
+            isNext = true;
+          }
         }
 
         return {

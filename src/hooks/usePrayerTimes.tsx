@@ -65,21 +65,10 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
     queryFn: async () => {
       if (!location) return null;
 
-      // Format coordinates for Diyanet API
-      const latDeg = Math.floor(Math.abs(location.lat));
-      const latMin = Math.round((Math.abs(location.lat) - latDeg) * 60);
-      const lonDeg = Math.floor(Math.abs(location.lng));
-      const lonMin = Math.round((Math.abs(location.lng) - lonDeg) * 60);
-
-      const latStr = `${latDeg.toString().padStart(2, '0')}${latMin.toString().padStart(2, '0')}N`;
-      const lonStr = `${lonDeg.toString().padStart(3, '0')}${lonMin.toString().padStart(2, '0')}E`;
-
       const today = new Date().toISOString().split('T')[0];
       
-      console.log(`Fetching prayer times for ${latStr}/${lonStr}/${today}`);
-      
       const response = await fetch(
-        `https://namazapi.diyanet.gov.tr/api/PrayerTimes/${latStr}/${lonStr}/${today}`
+        `https://awqatsalah.diyanet.gov.tr/service/getawqatbycoordinate/${location.lat}/${location.lng}/${today}`
       );
       
       if (!response.ok) {
@@ -88,7 +77,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
 
       const data = await response.json();
 
-      const prayerOrder = ['Imsak', 'Gunes', 'Ogle', 'Ikindi', 'Aksam', 'Yatsi'];
+      const prayerOrder = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
       const now = new Date();
       const currentHours = now.getHours();
       const currentMinutes = now.getMinutes();
@@ -120,25 +109,16 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         const nextIndex = (currentPrayerIndex + 1) % prayerOrder.length;
         const isNext = index === nextIndex;
 
-        // Map Turkish names to English/Arabic
-        const prayerName = 
-          name === 'Imsak' ? 'Fajr' :
-          name === 'Gunes' ? 'Sunrise' :
-          name === 'Ogle' ? 'Dhuhr' :
-          name === 'Ikindi' ? 'Asr' :
-          name === 'Aksam' ? 'Maghrib' :
-          'Isha';
-
         const arabicName = 
-          name === 'Imsak' ? 'الفجر' :
-          name === 'Gunes' ? 'الشروق' :
-          name === 'Ogle' ? 'الظهر' :
-          name === 'Ikindi' ? 'العصر' :
-          name === 'Aksam' ? 'المغرب' :
+          name === 'Fajr' ? 'الفجر' :
+          name === 'Sunrise' ? 'الشروق' :
+          name === 'Dhuhr' ? 'الظهر' :
+          name === 'Asr' ? 'العصر' :
+          name === 'Maghrib' ? 'المغرب' :
           'العشاء';
 
         return {
-          name: prayerName,
+          name,
           arabicName,
           time,
           isCurrentPrayer,
@@ -148,7 +128,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
       
       return {
         prayerTimes,
-        hijriDate: data.HicriTarih || '',
+        hijriDate: data.HijriDate || '',
       };
     },
     enabled: !!location,

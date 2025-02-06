@@ -40,21 +40,10 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
         try {
           const batchResults = await Promise.all(
             batch.map(async (date) => {
-              const formattedDate = date.toISOString().split('T')[0];
-              
-              // Format coordinates for Diyanet API
-              const latDeg = Math.floor(Math.abs(latitude));
-              const latMin = Math.round((Math.abs(latitude) - latDeg) * 60);
-              const lonDeg = Math.floor(Math.abs(longitude));
-              const lonMin = Math.round((Math.abs(longitude) - lonDeg) * 60);
-
-              const latStr = `${latDeg.toString().padStart(2, '0')}${latMin.toString().padStart(2, '0')}N`;
-              const lonStr = `${lonDeg.toString().padStart(3, '0')}${lonMin.toString().padStart(2, '0')}E`;
-
-              console.log(`Fetching prayer times for ${latStr}/${lonStr}/${formattedDate}`);
+              const formattedDate = formatDate(date.toISOString());
               
               const response = await fetch(
-                `https://namazapi.diyanet.gov.tr/api/PrayerTimes/${latStr}/${lonStr}/${formattedDate}`
+                `https://awqatsalah.diyanet.gov.tr/service/getawqatbycoordinate/${latitude}/${longitude}/${formattedDate}`
               );
 
               if (!response.ok) {
@@ -64,12 +53,12 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
               const data = await response.json();
               return {
                 date: formatDate(date.toISOString()),
-                fajr: data.Imsak,
-                sunrise: data.Gunes,
-                dhuhr: data.Ogle,
-                asr: data.Ikindi,
-                maghrib: data.Aksam,
-                isha: data.Yatsi
+                fajr: data.Fajr,
+                sunrise: data.Sunrise,
+                dhuhr: data.Dhuhr,
+                asr: data.Asr,
+                maghrib: data.Maghrib,
+                isha: data.Isha
               };
             })
           );
@@ -89,7 +78,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
           }
 
           await new Promise(resolve => setTimeout(resolve, 3000));
-          i -= batchSize; // Retry this batch
+          i -= batchSize; // Diesen Batch erneut versuchen
         }
       }
 
@@ -98,7 +87,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
     enabled: !!latitude && !!longitude,
     retry: 2,
     retryDelay: (attemptIndex) => Math.min(1000 * (2 ** attemptIndex), 30000),
-    staleTime: 1000 * 60 * 60, // Cache for 1 hour
-    gcTime: 1000 * 60 * 60 * 24, // Keep in garbage collection for 24 hours
+    staleTime: 1000 * 60 * 60, // Cache für 1 Stunde
+    gcTime: 1000 * 60 * 60 * 24, // Im Garbage Collection für 24 Stunden behalten
   });
 };

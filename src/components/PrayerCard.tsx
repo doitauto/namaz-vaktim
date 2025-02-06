@@ -126,10 +126,6 @@ export const PrayerCard = ({ prayer, isNext, index, lang = 'tr' }: PrayerCardPro
           {prayer.time}
         </div>
       </div>
-      
-      {prayer.isCurrentPrayer && (
-        <div className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9] w-full" />
-      )}
     </motion.div>
   );
 };

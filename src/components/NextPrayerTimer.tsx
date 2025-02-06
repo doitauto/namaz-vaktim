@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Timer } from 'lucide-react';
 import { PrayerTime } from '@/lib/types';
@@ -12,7 +13,7 @@ interface NextPrayerTimerProps {
   lang?: string;
 }
 
-export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang = 'tr' }: NextPrayerTimerProps) => {
+export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', lang = 'tr' }: NextPrayerTimerProps) => {
   const [timeLeft, setTimeLeft] = useState<string>('');
   const t = getTranslation(lang);
   const { toast } = useToast();
@@ -20,26 +21,52 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date();
+      const currentHours = now.getHours();
+      const currentMinutes = now.getMinutes();
+      const currentSeconds = now.getSeconds();
+
+      // Parse next prayer time
       const [prayerHours, prayerMinutes] = nextPrayer.time.split(':').map(Number);
       
-      // Create date object for next prayer time
-      const nextPrayerTime = new Date();
-      nextPrayerTime.setHours(prayerHours, prayerMinutes, 0, 0);
-      
-      // If prayer time has passed today, add one day
-      if (now > nextPrayerTime) {
-        nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
+      // Calculate difference
+      let diffHours = prayerHours - currentHours;
+      let diffMinutes = prayerMinutes - currentMinutes;
+      let diffSeconds = 0 - currentSeconds;
+
+      // Adjust for negative differences
+      if (diffSeconds < 0) {
+        diffSeconds += 60;
+        diffMinutes--;
+      }
+      if (diffMinutes < 0) {
+        diffMinutes += 60;
+        diffHours--;
       }
       
-      // Calculate difference in milliseconds
-      const diff = nextPrayerTime.getTime() - now.getTime();
-      
-      // Convert to hours, minutes, seconds
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      
-      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      // If the prayer time has already passed today
+      if (diffHours < 0) {
+        // Find the first prayer time of the next day
+        const firstPrayerTime = prayerTimes[0];
+        const [firstPrayerHours, firstPrayerMinutes] = firstPrayerTime.time.split(':').map(Number);
+        
+        // Calculate hours until midnight plus hours until first prayer
+        diffHours = (24 - currentHours) + firstPrayerHours;
+        diffMinutes = firstPrayerMinutes - currentMinutes;
+        diffSeconds = 0 - currentSeconds;
+
+        // Adjust minutes and seconds again
+        if (diffSeconds < 0) {
+          diffSeconds += 60;
+          diffMinutes--;
+        }
+        if (diffMinutes < 0) {
+          diffMinutes += 60;
+          diffHours--;
+        }
+      }
+
+      // Format the time left
+      return `${String(diffHours).padStart(2, '0')}:${String(diffMinutes).padStart(2, '0')}:${String(diffSeconds).padStart(2, '0')}`;
     };
 
     const timer = setInterval(() => {
@@ -49,7 +76,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
     setTimeLeft(calculateTimeLeft());
 
     return () => clearInterval(timer);
-  }, [nextPrayer]);
+  }, [nextPrayer, prayerTimes]);
 
   return (
     <motion.div

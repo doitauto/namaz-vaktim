@@ -60,3 +60,4 @@ export const LocationInfo = ({ city, hijriDate }: LocationInfoProps) => {
     </div>
   );
 };
+

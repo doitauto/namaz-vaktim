@@ -13,8 +13,7 @@ export const LocationInfo = ({ city, parentLocation, hijriDate }: LocationInfoPr
       <div className="flex items-center justify-center gap-2">
         <MapPin className="h-4 w-4 text-[#8B5CF6]" />
         <span className="text-sm text-white/70">
-          {city}
-          {parentLocation && <span className="ml-1">({parentLocation})</span>}
+          {city} {parentLocation && `(${parentLocation})`}
         </span>
       </div>
       <div className="flex items-center justify-center gap-2">

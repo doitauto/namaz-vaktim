@@ -113,17 +113,23 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
     return () => clearInterval(timer);
   }, [nextPrayer, prayerTimes]);
 
+  const nextPrayerName = lang === 'tr' 
+    ? getPrayerNameInTurkish(nextPrayer.name)
+    : lang === 'de'
+      ? getPrayerNameInGerman(nextPrayer.name)
+      : nextPrayer.name;
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       className={`text-center ${className}`}
     >
+      <div className="text-lg font-medium text-white/80 mb-2">
+        {t.nextPrayer}: {nextPrayerName}
+      </div>
       <div className="text-5xl font-light tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9] mb-3">
         {timeLeft}
-      </div>
-      <div className="text-white/80 text-sm font-medium tracking-wide">
-        {t.nextPrayerLabel}
       </div>
       {isPrayerRestricted && (
         <div className="mt-2 text-red-500 text-sm font-medium">
@@ -134,3 +140,40 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
   );
 };
 
+const getPrayerNameInTurkish = (name: string): string => {
+  switch (name.toLowerCase()) {
+    case 'fajr':
+      return 'İmsak';
+    case 'sunrise':
+      return 'Güneş';
+    case 'dhuhr':
+      return 'Öğle';
+    case 'asr':
+      return 'İkindi';
+    case 'maghrib':
+      return 'Akşam';
+    case 'isha':
+      return 'Yatsı';
+    default:
+      return name;
+  }
+};
+
+const getPrayerNameInGerman = (name: string): string => {
+  switch (name.toLowerCase()) {
+    case 'fajr':
+      return 'Morgengebet';
+    case 'sunrise':
+      return 'Sonnenaufgang';
+    case 'dhuhr':
+      return 'Mittagsgebet';
+    case 'asr':
+      return 'Nachmittagsgebet';
+    case 'maghrib':
+      return 'Abendgebet';
+    case 'isha':
+      return 'Nachtgebet';
+    default:
+      return name;
+  }
+};

@@ -3,6 +3,8 @@ export interface PrayerTime {
   name: string;
   time: string;
   arabicName: string;
+  isCurrentPrayer?: boolean;
+  isNext?: boolean;
 }
 
 export interface City {

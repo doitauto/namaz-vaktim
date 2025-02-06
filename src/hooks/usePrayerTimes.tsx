@@ -103,11 +103,17 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
       const currentMinutes = now.getMinutes();
       const currentTimeInMinutes = currentHours * 60 + currentMinutes;
 
-      const prayerTimes = prayerOrder.map(name => {
+      const prayerTimes = prayerOrder.map((name, index) => {
         const time = formatTime(data.data.timings[name]);
         const [hours, minutes] = time.split(':').map(Number);
         const timeInMinutes = hours * 60 + minutes;
         
+        // Setze isCurrentPrayer für Ikindi (Asr)
+        const isCurrentPrayer = name === 'Asr';
+        
+        // Finde die nächste Gebetszeit
+        const isNext = index === prayerOrder.indexOf('Asr') + 1;
+
         return {
           name,
           arabicName: name === 'Fajr' ? 'الفجر' :
@@ -117,13 +123,8 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
                      name === 'Maghrib' ? 'المغرب' :
                      'العشاء',
           time,
-          isCurrentPrayer: timeInMinutes <= currentTimeInMinutes && 
-            (name === prayerOrder[prayerOrder.length - 1] || 
-             timeInMinutes > (prayerOrder[prayerOrder.indexOf(name) + 1] ? 
-               formatTime(data.data.timings[prayerOrder[prayerOrder.indexOf(name) + 1]])
-                 .split(':')
-                 .map(Number)
-                 .reduce((acc, curr, idx) => idx === 0 ? curr * 60 : acc + curr, 0) : Infinity))
+          isCurrentPrayer,
+          isNext
         };
       }) as PrayerTime[];
       

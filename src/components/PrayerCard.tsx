@@ -105,7 +105,7 @@ export const PrayerCard = ({ prayer, isNext, index, lang = 'tr' }: PrayerCardPro
             </p>
           </div>
         </div>
-        {isNext && (
+        {prayer.isNext && (
           <div className="px-3 py-1 rounded-full bg-white/10 text-sm text-white">
             {t.nextPrayer}
           </div>

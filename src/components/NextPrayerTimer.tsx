@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Timer } from 'lucide-react';
+import { Timer, Bell } from 'lucide-react';
 import { PrayerTime } from '@/lib/types';
 import { motion } from 'framer-motion';
 import { getTranslation } from '@/lib/translations';
@@ -71,13 +71,23 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
             ? "Akşam namazına 45 dakika kala sadece farz namaz kılınabilir."
             : "45 Minuten vor dem Abendgebet dürfen nur Fard-Gebete verrichtet werden.";
           
-          const { id } = toast({
-            title: lang === 'tr' ? "Namaz Hatırlatması" : "Gebetsbenachrichtigung",
-            description: message,
+          const toastInstance = toast({
+            title: (
+              <div className="flex items-center gap-2 text-[#8B5CF6]">
+                <Bell className="h-5 w-5" />
+                <span>{lang === 'tr' ? "Namaz Hatırlatması" : "Gebetsbenachrichtigung"}</span>
+              </div>
+            ),
+            description: (
+              <div className="bg-gradient-to-r from-[#E5DEFF] to-[#F2FCE2] p-3 rounded-lg mt-2 text-gray-700">
+                {message}
+              </div>
+            ),
             duration: (maghribTimeInMinutes - currentTimeInMinutes) * 60 * 1000,
+            className: "bg-white border-2 border-[#8B5CF6]/20 shadow-lg animate-in slide-in-from-top-full duration-300",
           });
           
-          setCurrentToastId(id);
+          setCurrentToastId(toastInstance.id);
           setHasShownNotification(true);
         }
         

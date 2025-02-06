@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -8,7 +7,7 @@ import { NextPrayerTimer } from '@/components/NextPrayerTimer';
 import { LocationInfo } from '@/components/LocationInfo';
 import { SavedLocations } from '@/components/SavedLocations';
 import { City, SavedLocation } from '@/lib/types';
-import { Compass, MapPin, Languages, Link2 } from 'lucide-react';
+import { Compass, MapPin, Languages, Link2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Link } from 'react-router-dom';
@@ -197,7 +196,7 @@ const Index = () => {
             <div className="flex items-center justify-between gap-2">
               <Link 
                 to="/qibla"
-                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center py-4 rounded-xl transition-all duration-300"
+                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center h-14 rounded-xl transition-all duration-300"
               >
                 <Compass className="h-6 w-6" />
               </Link>
@@ -205,7 +204,7 @@ const Index = () => {
               <Button
                 variant="ghost"
                 onClick={handleSaveLocation}
-                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center gap-2 justify-center py-4 rounded-xl transition-all duration-300"
+                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center gap-2 justify-center h-14 rounded-xl transition-all duration-300"
                 disabled={!selectedCity}
               >
                 <MapPin className="h-6 w-6" />
@@ -220,7 +219,7 @@ const Index = () => {
 
               <button
                 onClick={() => setLanguage(language === 'tr' ? 'de' : 'tr')}
-                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center py-4 rounded-xl transition-all duration-300"
+                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center h-14 rounded-xl transition-all duration-300"
               >
                 <Languages className="h-6 w-6" />
               </button>

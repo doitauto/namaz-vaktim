@@ -36,10 +36,7 @@ export const LocationInfo = ({ city, hijriDate }: LocationInfoProps) => {
 
   return (
     <div className="backdrop-blur-xl rounded-3xl p-8 border border-white/10 overflow-hidden relative">
-      <div 
-        className="absolute inset-0 bg-[url('/lovable-uploads/001b16e5-d601-46e0-8b59-3b38e878f15e.png')] bg-cover bg-center bg-no-repeat"
-        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-      />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-800/50 to-slate-900/50" />
       
       <div className="relative flex justify-between items-start">
         <div>

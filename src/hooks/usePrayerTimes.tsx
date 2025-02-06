@@ -4,6 +4,8 @@ import { Geolocation } from '@capacitor/geolocation';
 import { PrayerTime } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
 
+const API_BASE_URL = "https://namazapi.diyanet.gov.tr";
+
 export const usePrayerTimes = (latitude?: number, longitude?: number) => {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [nearestLocation, setNearestLocation] = useState<string>('');
@@ -65,91 +67,92 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
     queryFn: async () => {
       if (!location) return null;
 
-      // Format coordinates for Diyanet API
-      const latDeg = Math.floor(Math.abs(location.lat));
-      const latMin = Math.round((Math.abs(location.lat) - latDeg) * 60);
-      const lonDeg = Math.floor(Math.abs(location.lng));
-      const lonMin = Math.round((Math.abs(location.lng) - lonDeg) * 60);
+      try {
+        // 1. Authenticate
+        const authResponse = await fetch(`${API_BASE_URL}/api/Auth/Login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: "guest@diyanet.gov.tr",
+            password: "guest123"
+          })
+        });
 
-      const latStr = `${latDeg.toString().padStart(2, '0')}${latMin.toString().padStart(2, '0')}N`;
-      const lonStr = `${lonDeg.toString().padStart(3, '0')}${lonMin.toString().padStart(2, '0')}E`;
-
-      const today = new Date().toISOString().split('T')[0];
-      
-      const response = await fetch(
-        `https://namazapi.diyanet.gov.tr/api/PrayerTimes/${latStr}/${lonStr}/${today}`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch prayer times');
-      }
-
-      const data = await response.json();
-
-      const prayerOrder = ['Imsak', 'Gunes', 'Ogle', 'Ikindi', 'Aksam', 'Yatsi'];
-      const now = new Date();
-      const currentHours = now.getHours();
-      const currentMinutes = now.getMinutes();
-      const currentTimeInMinutes = currentHours * 60 + currentMinutes;
-
-      let currentPrayerIndex = -1;
-      
-      for (let i = prayerOrder.length - 1; i >= 0; i--) {
-        const time = data[prayerOrder[i]];
-        const [hours, minutes] = time.split(':').map(Number);
-        const prayerTimeInMinutes = hours * 60 + minutes;
-        
-        if (currentTimeInMinutes >= prayerTimeInMinutes) {
-          currentPrayerIndex = i;
-          break;
+        if (!authResponse.ok) {
+          throw new Error('Authentication failed');
         }
-      }
 
-      if (currentPrayerIndex === -1) {
-        currentPrayerIndex = prayerOrder.length - 1;
-      }
+        const authData = await authResponse.json();
+        const accessToken = authData.data.accessToken;
 
-      const prayerTimes = prayerOrder.map((name, index) => {
-        const time = data[name];
-        const [hours, minutes] = time.split(':').map(Number);
-        const timeInMinutes = hours * 60 + minutes;
+        // 2. Get prayer times
+        const today = new Date().toISOString().split('T')[0];
+        const response = await fetch(
+          `${API_BASE_URL}/api/PrayerTime/Daily/${location.lat},${location.lng}/${today}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${accessToken}`
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch prayer times');
+        }
+
+        const data = await response.json();
+        const prayerData = data.data[0];
+
+        const prayerTimes = [
+          { name: 'Fajr', arabicName: 'الفجر', time: prayerData.fajr },
+          { name: 'Sunrise', arabicName: 'الشروق', time: prayerData.sunrise },
+          { name: 'Dhuhr', arabicName: 'الظهر', time: prayerData.dhuhr },
+          { name: 'Asr', arabicName: 'العصر', time: prayerData.asr },
+          { name: 'Maghrib', arabicName: 'المغرب', time: prayerData.maghrib },
+          { name: 'Isha', arabicName: 'العشاء', time: prayerData.isha }
+        ] as PrayerTime[];
+
+        // Mark current and next prayers
+        const now = new Date();
+        const currentHours = now.getHours();
+        const currentMinutes = now.getMinutes();
+        const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+
+        let currentPrayerIndex = -1;
         
-        const isCurrentPrayer = index === currentPrayerIndex;
-        const nextIndex = (currentPrayerIndex + 1) % prayerOrder.length;
-        const isNext = index === nextIndex;
+        for (let i = prayerTimes.length - 1; i >= 0; i--) {
+          const [hours, minutes] = prayerTimes[i].time.split(':').map(Number);
+          const prayerTimeInMinutes = hours * 60 + minutes;
+          
+          if (currentTimeInMinutes >= prayerTimeInMinutes) {
+            currentPrayerIndex = i;
+            break;
+          }
+        }
 
-        // Map Turkish names to English/Arabic
-        const prayerName = 
-          name === 'Imsak' ? 'Fajr' :
-          name === 'Gunes' ? 'Sunrise' :
-          name === 'Ogle' ? 'Dhuhr' :
-          name === 'Ikindi' ? 'Asr' :
-          name === 'Aksam' ? 'Maghrib' :
-          'Isha';
+        if (currentPrayerIndex === -1) {
+          currentPrayerIndex = prayerTimes.length - 1;
+        }
 
-        const arabicName = 
-          name === 'Imsak' ? 'الفجر' :
-          name === 'Gunes' ? 'الشروق' :
-          name === 'Ogle' ? 'الظهر' :
-          name === 'Ikindi' ? 'العصر' :
-          name === 'Aksam' ? 'المغرب' :
-          'العشاء';
+        const nextIndex = (currentPrayerIndex + 1) % prayerTimes.length;
+
+        prayerTimes[currentPrayerIndex].isCurrentPrayer = true;
+        prayerTimes[nextIndex].isNext = true;
 
         return {
-          name: prayerName,
-          arabicName,
-          time,
-          isCurrentPrayer,
-          isNext
+          prayerTimes,
+          hijriDate: prayerData.hijriDateShort || '',
         };
-      }) as PrayerTime[];
-      
-      return {
-        prayerTimes,
-        hijriDate: data.HicriTarih || '',
-      };
+      } catch (error) {
+        console.error('Error:', error);
+        throw error;
+      }
     },
     enabled: !!location,
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * (2 ** attemptIndex), 30000),
   });
 
   return { 

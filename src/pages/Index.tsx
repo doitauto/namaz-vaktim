@@ -105,11 +105,11 @@ const Index = () => {
       </div>
 
       <div className="max-w-2xl mx-auto relative z-10">
-        <div className="absolute top-0 left-0 pl-4 pt-4">
+        <div className="relative z-50 pt-4 pl-4">
           <span className="text-white/50 text-sm">Developed by A. Calhan</span>
         </div>
 
-        <div className="absolute top-0 right-0 bg-gradient-to-br from-[#1A1F2C] to-[#2C1A2F]">
+        <div className="absolute top-0 right-0">
           <a 
             href="https://ditib-lonsee.de/imsakiye/index.html"
             target="_blank"

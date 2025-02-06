@@ -87,6 +87,6 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
     retry: 3,
     retryDelay: 1000,
     staleTime: 1000 * 60 * 60, // Cache für 1 Stunde
-    cacheTime: 1000 * 60 * 60 * 24, // Cache für 24 Stunden behalten
+    gcTime: 1000 * 60 * 60 * 24, // Cache für 24 Stunden behalten
   });
 };

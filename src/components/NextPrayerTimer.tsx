@@ -17,24 +17,20 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
   const t = getTranslation(lang);
   const { toast } = useToast();
   const [hasShownNotification, setHasShownNotification] = useState(false);
+  const [currentToastId, setCurrentToastId] = useState<string | null>(null);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      // Aktuelle Zeit
       const now = new Date();
       
-      // Finde die nächste Gebetszeit
       let nextPrayerTime: Date | null = null;
       let targetPrayer = nextPrayer;
 
-      // Konvertiere die Gebetszeit in ein Date-Objekt für heute
       const [targetHours, targetMinutes] = targetPrayer.time.split(':').map(Number);
       nextPrayerTime = new Date(now);
       nextPrayerTime.setHours(targetHours, targetMinutes, 0, 0);
 
-      // Wenn die Zeit bereits vorbei ist und wir weitere Gebetszeiten haben
       if (nextPrayerTime < now && prayerTimes.length > 0) {
-        // Suche die nächste verfügbare Gebetszeit heute
         const futureTime = prayerTimes.find(prayer => {
           const [hours, minutes] = prayer.time.split(':').map(Number);
           const prayerTime = new Date(now);
@@ -43,12 +39,10 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
         });
 
         if (futureTime) {
-          // Nehme die nächste Gebetszeit heute
           const [hours, minutes] = futureTime.time.split(':').map(Number);
           nextPrayerTime = new Date(now);
           nextPrayerTime.setHours(hours, minutes, 0, 0);
         } else {
-          // Wenn keine weitere Gebetszeit heute, nehme die erste Gebetszeit morgen
           const firstPrayer = prayerTimes[0];
           const [hours, minutes] = firstPrayer.time.split(':').map(Number);
           nextPrayerTime = new Date(now);
@@ -62,46 +56,46 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
       const currentMinutes = now2.getMinutes();
       const currentTimeInMinutes = currentHours * 60 + currentMinutes;
 
-      // Finde Maghrib (Akşam) Gebetszeit
       const maghribPrayer = prayerTimes.find(prayer => prayer.name === 'Maghrib');
       
       if (maghribPrayer) {
         const [maghribHours, maghribMinutes] = maghribPrayer.time.split(':').map(Number);
         const maghribTimeInMinutes = maghribHours * 60 + maghribMinutes;
         
-        // Berechne die Zeit 45 Minuten vor Maghrib
         const notificationTimeInMinutes = maghribTimeInMinutes - 45;
         
-        // Wenn es genau die Zeit für die Benachrichtigung ist und sie noch nicht angezeigt wurde
-        if (currentTimeInMinutes === notificationTimeInMinutes && !hasShownNotification) {
+        if (currentTimeInMinutes >= notificationTimeInMinutes && 
+            currentTimeInMinutes < maghribTimeInMinutes && 
+            !hasShownNotification) {
           const message = lang === 'tr' 
             ? "Akşam namazına 45 dakika kala sadece farz namaz kılınabilir."
             : "45 Minuten vor dem Abendgebet dürfen nur Fard-Gebete verrichtet werden.";
           
-          toast({
+          const { id } = toast({
             title: lang === 'tr' ? "Namaz Hatırlatması" : "Gebetsbenachrichtigung",
             description: message,
-            duration: 10000, // 10 Sekunden anzeigen
+            duration: (maghribTimeInMinutes - currentTimeInMinutes) * 60 * 1000,
           });
           
+          setCurrentToastId(id);
           setHasShownNotification(true);
         }
         
-        // Reset hasShownNotification nach dem Maghrib-Gebet
-        if (currentTimeInMinutes > maghribTimeInMinutes) {
+        if (currentTimeInMinutes >= maghribTimeInMinutes) {
           setHasShownNotification(false);
+          if (currentToastId) {
+            toast.dismiss(currentToastId);
+            setCurrentToastId(null);
+          }
         }
       }
 
-      // Berechne die Zeitdifferenz
       const diff = nextPrayerTime.getTime() - now.getTime();
       
-      // Konvertiere in Stunden, Minuten und Sekunden
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-      // Formatiere die Zeit
       return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
@@ -112,7 +106,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
     setTimeLeft(calculateTimeLeft());
 
     return () => clearInterval(timer);
-  }, [nextPrayer, prayerTimes, toast, lang, hasShownNotification]);
+  }, [nextPrayer, prayerTimes, toast, lang, hasShownNotification, currentToastId]);
 
   return (
     <motion.div

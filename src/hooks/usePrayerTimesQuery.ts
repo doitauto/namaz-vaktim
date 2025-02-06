@@ -22,50 +22,71 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
         return date;
       });
 
-      const results = await Promise.all(
-        dates.map(async (date) => {
-          const timestamp = Math.floor(date.getTime() / 1000);
-          
-          const params = new URLSearchParams({
-            latitude: latitude.toString(),
-            longitude: longitude.toString(),
-            method: '13',
-            shafaq: 'general',
-            tune: '11,1,-7,5,-34,6,6,-7,-6',
-            school: '1',
-            midnightMode: '0',
-            timezonestring: 'Europe/Berlin',
-            latitudeAdjustmentMethod: '1',
-            calendarMethod: 'DIYANET',
-            adjustment: '1'
-          });
+      // Batch die Anfragen in Gruppen von 10
+      const batchSize = 10;
+      const results: ExtendedPrayerTime[] = [];
 
-          const response = await fetch(
-            `https://api.aladhan.com/v1/timings/${timestamp}?${params.toString()}`
-          );
+      for (let i = 0; i < dates.length; i += batchSize) {
+        const batch = dates.slice(i, i + batchSize);
+        
+        // Warte 1 Sekunde zwischen den Batches
+        if (i > 0) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
 
-          if (!response.ok) {
-            throw new Error('Failed to fetch prayer times');
-          }
+        const batchResults = await Promise.all(
+          batch.map(async (date) => {
+            const timestamp = Math.floor(date.getTime() / 1000);
+            
+            const params = new URLSearchParams({
+              latitude: latitude.toString(),
+              longitude: longitude.toString(),
+              method: '13',
+              shafaq: 'general',
+              tune: '11,1,-7,5,-34,6,6,-7,-6',
+              school: '1',
+              midnightMode: '0',
+              timezonestring: 'Europe/Berlin',
+              latitudeAdjustmentMethod: '1',
+              calendarMethod: 'DIYANET',
+              adjustment: '1'
+            });
 
-          const data = await response.json();
-          return {
-            date: formatDate(date.toISOString()),
-            fajr: data.data.timings.Fajr,
-            sunrise: data.data.timings.Sunrise,
-            dhuhr: data.data.timings.Dhuhr,
-            asr: data.data.timings.Asr,
-            maghrib: data.data.timings.Maghrib,
-            isha: data.data.timings.Isha
-          };
-        })
-      );
+            try {
+              const response = await fetch(
+                `https://api.aladhan.com/v1/timings/${timestamp}?${params.toString()}`
+              );
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+
+              const data = await response.json();
+              return {
+                date: formatDate(date.toISOString()),
+                fajr: data.data.timings.Fajr,
+                sunrise: data.data.timings.Sunrise,
+                dhuhr: data.data.timings.Dhuhr,
+                asr: data.data.timings.Asr,
+                maghrib: data.data.timings.Maghrib,
+                isha: data.data.timings.Isha
+              };
+            } catch (error) {
+              console.error(`Error fetching prayer times for ${date}:`, error);
+              throw error;
+            }
+          })
+        );
+
+        results.push(...batchResults);
+      }
 
       return results;
     },
     enabled: !!latitude && !!longitude,
     retry: 3,
-    retryDelay: 1000
+    retryDelay: 1000,
+    staleTime: 1000 * 60 * 60, // Cache für 1 Stunde
+    cacheTime: 1000 * 60 * 60 * 24, // Cache für 24 Stunden behalten
   });
 };
-

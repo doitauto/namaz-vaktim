@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 export const usePrayerTimes = (latitude?: number, longitude?: number) => {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [nearestLocation, setNearestLocation] = useState<string>('');
+  const [parentLocation, setParentLocation] = useState<string>('');
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -39,17 +40,26 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         );
         const data = await response.json();
         
-        const locationName = data.address?.suburb || 
-                           data.address?.city_district || 
-                           data.address?.town || 
-                           data.address?.city || 
-                           data.address?.village || 
-                           'Unbekannter Ort';
+        // Get immediate location (suburb, district, etc.)
+        const immediateLocation = data.address?.suburb || 
+                                data.address?.city_district || 
+                                data.address?.town || 
+                                data.address?.city || 
+                                data.address?.village || 
+                                'Unbekannter Ort';
+        
+        // Get parent location (city, state, etc.)
+        const parent = data.address?.city || 
+                      data.address?.county ||
+                      data.address?.state ||
+                      '';
                            
-        setNearestLocation(locationName);
+        setNearestLocation(immediateLocation);
+        setParentLocation(parent);
       } catch (error) {
         console.error('Error fetching location name:', error);
         setNearestLocation('Unbekannter Ort');
+        setParentLocation('');
       }
     };
 
@@ -162,6 +172,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
     isLoading, 
     error, 
     location,
-    nearestLocation 
+    nearestLocation,
+    parentLocation 
   };
 };

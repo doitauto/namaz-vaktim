@@ -26,7 +26,7 @@ const Index = () => {
   const { toast } = useToast();
   const t = getTranslation(language);
   
-  const { prayerTimes, hijriDate, isLoading, location, nearestLocation } = usePrayerTimes(
+  const { prayerTimes, hijriDate, isLoading, location, nearestLocation, parentLocation } = usePrayerTimes(
     selectedCity?.latitude,
     selectedCity?.longitude
   );
@@ -135,7 +135,8 @@ const Index = () => {
                 lang={language}
               />
               <LocationInfo 
-                city={selectedCity?.name || nearestLocation} 
+                city={selectedCity?.name || nearestLocation}
+                parentLocation={parentLocation}
                 hijriDate={hijriDate}
               />
             </>

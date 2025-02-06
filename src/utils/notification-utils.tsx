@@ -1,15 +1,15 @@
 
 import React from 'react';
 import { PrayerTime } from '@/lib/types';
-import { type ToastFunction } from '@/hooks/use-toast';
+import { toast as toastFn } from '@/hooks/use-toast';
 
 export const showPrayerNotification = (
   title: string,
   message: string,
   duration: number,
-  toastFn: ToastFunction
+  toast: typeof toastFn
 ) => {
-  return toastFn({
+  return toast({
     title: title,
     description: (
       <div className="bg-gradient-to-r from-[#E5DEFF] to-[#F2FCE2] p-3 rounded-lg mt-2 text-gray-700">

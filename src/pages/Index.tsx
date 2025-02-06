@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -13,7 +14,6 @@ import { Link } from 'react-router-dom';
 import { getTranslation } from '@/lib/translations';
 import { PrayerTable } from '@/components/PrayerTable';
 import { TimeRange } from '@/lib/types';
-import { NextPrayerTimer } from '@/components/NextPrayerTimer';
 
 const STORAGE_KEY = 'saved-prayer-locations';
 
@@ -105,7 +105,7 @@ const Index = () => {
       </div>
 
       <div className="max-w-2xl mx-auto relative z-10">
-        <div className="absolute top-0 left-0 bg-gradient-to-br from-[#1A1F2C] to-[#2C1A2F]">
+        <div className="absolute top-0 left-0 pl-4 pt-4">
           <span className="text-white/50 text-sm">Developed by A. Calhan</span>
         </div>
 

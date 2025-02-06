@@ -8,7 +8,7 @@ import { NextPrayerTimer } from '@/components/NextPrayerTimer';
 import { LocationInfo } from '@/components/LocationInfo';
 import { SavedLocations } from '@/components/SavedLocations';
 import { City, SavedLocation } from '@/lib/types';
-import { Loader2, Compass, MapPin, Languages } from 'lucide-react';
+import { Loader2, Compass, MapPin, Languages, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Link } from 'react-router-dom';
@@ -143,6 +143,15 @@ const Index = () => {
               >
                 <Compass className="h-6 w-6" />
               </Link>
+
+              <a 
+                href="https://ditib-lonsee.de/imsakiye/index.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center py-4 rounded-xl transition-all duration-300"
+              >
+                <Link2 className="h-6 w-6" />
+              </a>
             
               <Button
                 variant="ghost"

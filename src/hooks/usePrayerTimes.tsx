@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Geolocation } from '@capacitor/geolocation';
 import { PrayerTime } from '@/lib/types';
@@ -28,7 +29,6 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
     getCurrentPosition();
   }, [latitude, longitude]);
 
-  // Fetch nearest location name using reverse geocoding
   useEffect(() => {
     const fetchLocationName = async () => {
       if (!location) return;
@@ -39,7 +39,6 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         );
         const data = await response.json();
         
-        // Use the most specific name available
         const locationName = data.address?.suburb || 
                            data.address?.city_district || 
                            data.address?.town || 
@@ -102,38 +101,38 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
       const currentMinutes = now.getMinutes();
       const currentTimeInMinutes = currentHours * 60 + currentMinutes;
 
+      let currentPrayerIndex = -1;
+      
+      // Find the current prayer time
+      for (let i = prayerOrder.length - 1; i >= 0; i--) {
+        const time = formatTime(data.data.timings[prayerOrder[i]]);
+        const [hours, minutes] = time.split(':').map(Number);
+        const prayerTimeInMinutes = hours * 60 + minutes;
+        
+        if (currentTimeInMinutes >= prayerTimeInMinutes) {
+          currentPrayerIndex = i;
+          break;
+        }
+      }
+
+      // If no prayer time is found before current time, it means we're after Isha
+      // So the current prayer is still Isha (last prayer of the day)
+      if (currentPrayerIndex === -1) {
+        currentPrayerIndex = prayerOrder.length - 1;
+      }
+
       const prayerTimes = prayerOrder.map((name, index) => {
         const time = formatTime(data.data.timings[name]);
         const [hours, minutes] = time.split(':').map(Number);
         const timeInMinutes = hours * 60 + minutes;
         
-        // Setze isCurrentPrayer für Ikindi (Asr)
-        const isCurrentPrayer = name === 'Asr';
+        // Set current prayer based on the found index
+        const isCurrentPrayer = index === currentPrayerIndex;
         
-        // Finde die nächste Gebetszeit
+        // Find the next prayer time
         let isNext = false;
-
-        // Konvertiere die aktuelle Zeit und die Gebetszeit in Minuten seit Mitternacht
-        const prayerTimeInMinutes = hours * 60 + minutes;
-        
-        if (currentTimeInMinutes < prayerTimeInMinutes) {
-          // Wenn die Gebetszeit später am selben Tag ist
-          const nextPrayerIndex = prayerOrder.findIndex(p => {
-            const t = formatTime(data.data.timings[p]);
-            const [h, m] = t.split(':').map(Number);
-            return (h * 60 + m) > currentTimeInMinutes;
-          });
-          isNext = index === nextPrayerIndex;
-        } else if (index === 0 && currentTimeInMinutes >= prayerTimeInMinutes) {
-          // Wenn es nach der letzten Gebetszeit des Tages ist, ist Fajr die nächste
-          const lastPrayerTime = formatTime(data.data.timings[prayerOrder[prayerOrder.length - 1]]);
-          const [lastHours, lastMinutes] = lastPrayerTime.split(':').map(Number);
-          const lastPrayerTimeInMinutes = lastHours * 60 + lastMinutes;
-          
-          if (currentTimeInMinutes >= lastPrayerTimeInMinutes) {
-            isNext = true;
-          }
-        }
+        const nextIndex = (currentPrayerIndex + 1) % prayerOrder.length;
+        isNext = index === nextIndex;
 
         return {
           name,

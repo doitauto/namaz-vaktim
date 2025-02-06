@@ -104,30 +104,38 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         { name: 'Isha', arabicName: 'العشاء', time: formatTime(data.data.timings.Isha) },
       ] as PrayerTime[];
 
-      // Finde die aktuelle/nächste Gebetszeit
+      // Sortiere die Gebetszeiten basierend auf der aktuellen Zeit
       const now = new Date();
       const currentHours = now.getHours();
       const currentMinutes = now.getMinutes();
       const currentTimeInMinutes = currentHours * 60 + currentMinutes;
 
-      let nextPrayerIndex = 0;
-      for (let i = 0; i < prayerTimes.length; i++) {
-        const [hours, minutes] = prayerTimes[i].time.split(':').map(Number);
+      const sortedPrayerTimes = prayerTimes.map(prayer => {
+        const [hours, minutes] = prayer.time.split(':').map(Number);
         const prayerTimeInMinutes = hours * 60 + minutes;
-        
-        if (prayerTimeInMinutes > currentTimeInMinutes) {
-          nextPrayerIndex = i;
-          break;
+        return {
+          ...prayer,
+          minutesFromMidnight: prayerTimeInMinutes,
+          hasPassedToday: prayerTimeInMinutes <= currentTimeInMinutes
+        };
+      }).sort((a, b) => {
+        // Wenn beide Zeiten vergangen sind oder beide noch nicht, normal sortieren
+        if (a.hasPassedToday === b.hasPassedToday) {
+          return a.minutesFromMidnight - b.minutesFromMidnight;
         }
-      }
+        // Wenn eine Zeit vergangen ist und die andere nicht, die nicht vergangene zuerst
+        return a.hasPassedToday ? 1 : -1;
+      });
 
-      // Verschiebe die nächste Gebetszeit an den Anfang
-      const nextPrayer = prayerTimes[nextPrayerIndex];
-      prayerTimes.splice(nextPrayerIndex, 1);
-      prayerTimes.unshift(nextPrayer);
+      // Entferne die zusätzlichen Eigenschaften vor der Rückgabe
+      const cleanedPrayerTimes = sortedPrayerTimes.map(({ name, arabicName, time }) => ({
+        name,
+        arabicName,
+        time
+      }));
       
       return {
-        prayerTimes,
+        prayerTimes: cleanedPrayerTimes,
         hijriDate: `${data.data.date.hijri.day} ${data.data.date.hijri.month.en} ${data.data.date.hijri.year}`,
       };
     },

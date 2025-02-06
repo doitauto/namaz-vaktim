@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -126,7 +127,7 @@ const Index = () => {
           </Button>
         </div>
 
-        <div className="text-center space-y-4 mt-4">
+        <div className="text-center space-y-4 mt-16">
           <h1 className="text-5xl font-light tracking-wider text-white/90">
             {selectedCity?.name}
           </h1>

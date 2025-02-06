@@ -59,19 +59,13 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
       const currentMinutes = now2.getMinutes();
       const currentTimeInMinutes = currentHours * 60 + currentMinutes;
 
-      // Handle Maghrib notification (45 minutes before)
       const maghribPrayer = prayerTimes.find(prayer => prayer.name === 'Maghrib');
       const sunrisePrayer = prayerTimes.find(prayer => prayer.name === 'Sunrise');
       const dhuhrPrayer = prayerTimes.find(prayer => prayer.name === 'Dhuhr');
       
       const showNotification = (title: string, message: string, duration: number) => {
-        return toast({
-          title: (
-            <div className="flex items-center gap-2 text-[#8B5CF6]">
-              <Bell className="h-5 w-5" />
-              {title}
-            </div>
-          ),
+        const toastContent = {
+          title: title,
           description: (
             <div className="bg-gradient-to-r from-[#E5DEFF] to-[#F2FCE2] p-3 rounded-lg mt-2 text-gray-700">
               {message}
@@ -79,7 +73,9 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
           ),
           duration: duration,
           className: "bg-white border-2 border-[#8B5CF6]/20 shadow-lg animate-in slide-in-from-top-full duration-300",
-        });
+        };
+        
+        return toast(toastContent);
       };
       
       if (maghribPrayer) {
@@ -108,7 +104,6 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
         }
       }
 
-      // Handle Sunrise notification
       if (sunrisePrayer) {
         const [sunriseHours, sunriseMinutes] = sunrisePrayer.time.split(':').map(Number);
         const sunriseTimeInMinutes = sunriseHours * 60 + sunriseMinutes;
@@ -135,7 +130,6 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
         }
       }
 
-      // Handle Dhuhr notification (30 minutes before)
       if (dhuhrPrayer) {
         const [dhuhrHours, dhuhrMinutes] = dhuhrPrayer.time.split(':').map(Number);
         const dhuhrTimeInMinutes = dhuhrHours * 60 + dhuhrMinutes;
@@ -229,4 +223,3 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes = [], className = '', 
     </motion.div>
   );
 };
-

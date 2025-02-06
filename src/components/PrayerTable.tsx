@@ -65,11 +65,13 @@ export const PrayerTable = ({ timeRange, lang, latitude, longitude }: PrayerTabl
       const dates = Array.from({ length: days }, (_, i) => {
         const date = new Date();
         date.setDate(date.getDate() + i);
-        return date.toISOString().split('T')[0];
+        return date;
       });
 
       const results = await Promise.all(
         dates.map(async (date) => {
+          const timestamp = Math.floor(date.getTime() / 1000);
+          
           const params = new URLSearchParams({
             latitude: latitude.toString(),
             longitude: longitude.toString(),
@@ -85,7 +87,7 @@ export const PrayerTable = ({ timeRange, lang, latitude, longitude }: PrayerTabl
           });
 
           const response = await fetch(
-            `https://api.aladhan.com/v1/timings/${date}?${params.toString()}`
+            `https://api.aladhan.com/v1/timings/${timestamp}?${params.toString()}`
           );
 
           if (!response.ok) {
@@ -94,7 +96,7 @@ export const PrayerTable = ({ timeRange, lang, latitude, longitude }: PrayerTabl
 
           const data = await response.json();
           return {
-            date: formatDate(date),
+            date: formatDate(date.toISOString()),
             fajr: data.data.timings.Fajr,
             sunrise: data.data.timings.Sunrise,
             dhuhr: data.data.timings.Dhuhr,
@@ -107,7 +109,9 @@ export const PrayerTable = ({ timeRange, lang, latitude, longitude }: PrayerTabl
 
       return results;
     },
-    enabled: !!latitude && !!longitude
+    enabled: !!latitude && !!longitude,
+    retry: 3,
+    retryDelay: 1000
   });
 
   const exportToExcel = async () => {
@@ -120,7 +124,6 @@ export const PrayerTable = ({ timeRange, lang, latitude, longitude }: PrayerTabl
       return;
     }
 
-    // TODO: Implement Excel export
     console.log('Exporting to Excel...', prayerTimes);
   };
 
@@ -134,7 +137,6 @@ export const PrayerTable = ({ timeRange, lang, latitude, longitude }: PrayerTabl
       return;
     }
 
-    // TODO: Implement PDF export
     console.log('Exporting to PDF...', prayerTimes);
   };
 
@@ -202,4 +204,3 @@ export const PrayerTable = ({ timeRange, lang, latitude, longitude }: PrayerTabl
     </div>
   );
 };
-

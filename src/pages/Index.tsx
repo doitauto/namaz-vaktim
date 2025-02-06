@@ -103,6 +103,18 @@ const Index = () => {
       </div>
 
       <div className="max-w-2xl mx-auto space-y-8 relative z-10">
+        <div className="absolute top-0 right-0">
+          <a 
+            href="https://ditib-lonsee.de/imsakiye/index.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white px-4 py-2 rounded-xl transition-all duration-300"
+          >
+            <Link2 className="h-5 w-5" />
+            <span>IMSAKIYE</span>
+          </a>
+        </div>
+
         <div className="text-center space-y-4 mt-12">
           <h1 className="text-5xl font-light tracking-wider text-white/90">
             {selectedCity?.name}
@@ -143,15 +155,6 @@ const Index = () => {
               >
                 <Compass className="h-6 w-6" />
               </Link>
-
-              <a 
-                href="https://ditib-lonsee.de/imsakiye/index.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white flex items-center justify-center py-4 rounded-xl transition-all duration-300"
-              >
-                <Link2 className="h-6 w-6" />
-              </a>
             
               <Button
                 variant="ghost"

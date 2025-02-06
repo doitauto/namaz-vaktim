@@ -34,8 +34,8 @@ interface DiyanetPrayerTimeResponse {
   message: string | null;
 }
 
-// Annahme: Die API-Basis-URL
-const API_BASE_URL = "https://namazapi.diyanet.gov.tr";
+// API-Basis-URL für die Diyanet Prayer Times API
+const API_BASE_URL = "https://awqatsalah.diyanet.gov.tr/api";
 
 export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePrayerTimesQueryProps) => {
   const { toast } = useToast();
@@ -47,7 +47,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
 
       try {
         // 1. Authentifizierung
-        const authResponse = await fetch(`${API_BASE_URL}/api/Auth/Login`, {
+        const authResponse = await fetch(`${API_BASE_URL}/Auth/Login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
                 const formattedDate = date.toISOString().split('T')[0];
                 
                 const response = await fetch(
-                  `${API_BASE_URL}/api/PrayerTime/Daily/${latitude},${longitude}/${formattedDate}`,
+                  `${API_BASE_URL}/PrayerTime/Daily/${latitude},${longitude}/${formattedDate}`,
                   {
                     headers: {
                       'Authorization': `Bearer ${accessToken}`

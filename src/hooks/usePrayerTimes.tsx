@@ -4,7 +4,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import { PrayerTime } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
 
-const API_BASE_URL = "https://namazapi.diyanet.gov.tr";
+const API_BASE_URL = "https://awqatsalah.diyanet.gov.tr/api";
 
 export const usePrayerTimes = (latitude?: number, longitude?: number) => {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -69,7 +69,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
 
       try {
         // 1. Authenticate
-        const authResponse = await fetch(`${API_BASE_URL}/api/Auth/Login`, {
+        const authResponse = await fetch(`${API_BASE_URL}/Auth/Login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         // 2. Get prayer times
         const today = new Date().toISOString().split('T')[0];
         const response = await fetch(
-          `${API_BASE_URL}/api/PrayerTime/Daily/${location.lat},${location.lng}/${today}`,
+          `${API_BASE_URL}/PrayerTime/Daily/${location.lat},${location.lng}/${today}`,
           {
             headers: {
               'Authorization': `Bearer ${accessToken}`

@@ -40,6 +40,9 @@ export const LocationInfo = ({ city, hijriDate }: LocationInfoProps) => {
       
       <div className="relative flex justify-between items-start">
         <div>
+          <div className="text-lg font-medium text-white/80 mb-2">
+            Vaktin Çıkmasına Kalan Süre
+          </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
             {timeLeft}
           </h1>

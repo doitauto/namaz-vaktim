@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -123,12 +122,18 @@ const Index = () => {
             {selectedCity?.name}
           </h1>
           {prayerTimes && prayerTimes.length > 0 && (
-            <NextPrayerTimer 
-              nextPrayer={prayerTimes[0]} 
-              prayerTimes={prayerTimes}
-              className="inline-block mt-4"
-              lang={language}
-            />
+            <>
+              <NextPrayerTimer 
+                nextPrayer={prayerTimes[0]} 
+                prayerTimes={prayerTimes}
+                className="inline-block mt-4"
+                lang={language}
+              />
+              <LocationInfo 
+                city={selectedCity?.name || nearestLocation} 
+                hijriDate={hijriDate}
+              />
+            </>
           )}
         </div>
 
@@ -143,11 +148,6 @@ const Index = () => {
             />
           ))}
         </div>
-
-        <LocationInfo 
-          city={selectedCity?.name || nearestLocation} 
-          hijriDate={hijriDate}
-        />
 
         <div className="space-y-2 mb-4">
           <LocationButton onLocationRequest={handleLocationRequest} />

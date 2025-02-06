@@ -71,7 +71,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         longitude: location.lng.toString(),
         method: '13',
         shafaq: 'general',
-        tune: '11,1,-7,5,-34,6,6,-7,-6',
+        tune: '0,0,0,4,0,8,8,0,0', // Angepasste tune-Parameter für Lonsee
         school: '1',
         midnightMode: '0',
         timezonestring: 'Europe/Berlin',

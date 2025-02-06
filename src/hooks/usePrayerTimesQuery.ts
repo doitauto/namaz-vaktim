@@ -1,4 +1,3 @@
-
 import { ExtendedPrayerTime, TimeRange } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate, getDaysToFetch } from "@/lib/prayer-utils";
@@ -48,7 +47,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
                 longitude: longitude.toString(),
                 method: '13',
                 shafaq: 'general',
-                tune: '11,1,-7,5,-34,6,6,-7,-6',
+                tune: '0,0,0,4,0,8,8,0,0', // Angepasste tune-Parameter für Lonsee
                 school: '1',
                 midnightMode: '0',
                 timezonestring: 'Europe/Berlin',

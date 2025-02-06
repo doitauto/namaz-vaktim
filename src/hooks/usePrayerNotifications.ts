@@ -118,8 +118,10 @@ export const usePrayerNotifications = (prayerTimes: PrayerTime[] = [], lang: str
       }
     }
 
+    // Clean up previous toast if exists
     if (currentToastId) {
-      toast.dismiss(currentToastId);
+      const { dismiss } = useToast();
+      dismiss(currentToastId);
       setCurrentToastId(null);
     }
   }, [prayerTimes, toast, lang, hasShownMaghribNotification, hasShownSunriseNotification, hasShownDhuhrNotification, currentToastId]);

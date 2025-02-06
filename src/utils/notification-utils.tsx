@@ -1,13 +1,13 @@
 
 import React from 'react';
 import { PrayerTime } from '@/lib/types';
-import { UseToastResult } from '@/components/ui/use-toast';
+import { toast } from "@/hooks/use-toast";
 
 export const showPrayerNotification = (
   title: string,
   message: string,
   duration: number,
-  toast: UseToastResult["toast"]
+  toast: typeof toast
 ) => {
   return toast({
     title: title,
@@ -37,4 +37,3 @@ export const getNotificationMessages = (lang: string) => {
       : "30 Minuten vor dem Mittagsgebet darf kein Gebet verrichtet werden.",
   };
 };
-

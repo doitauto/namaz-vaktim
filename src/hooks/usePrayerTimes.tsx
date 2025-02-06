@@ -29,6 +29,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
     getCurrentPosition();
   }, [latitude, longitude]);
 
+  // Fetch nearest location name using reverse geocoding
   useEffect(() => {
     const fetchLocationName = async () => {
       if (!location) return;
@@ -39,6 +40,7 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         );
         const data = await response.json();
         
+        // Use the most specific name available
         const locationName = data.address?.suburb || 
                            data.address?.city_district || 
                            data.address?.town || 
@@ -103,28 +105,6 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         { name: 'Maghrib', arabicName: 'المغرب', time: formatTime(data.data.timings.Maghrib) },
         { name: 'Isha', arabicName: 'العشاء', time: formatTime(data.data.timings.Isha) },
       ] as PrayerTime[];
-
-      // Finde die aktuelle/nächste Gebetszeit
-      const now = new Date();
-      const currentHours = now.getHours();
-      const currentMinutes = now.getMinutes();
-      const currentTimeInMinutes = currentHours * 60 + currentMinutes;
-
-      let nextPrayerIndex = 0;
-      for (let i = 0; i < prayerTimes.length; i++) {
-        const [hours, minutes] = prayerTimes[i].time.split(':').map(Number);
-        const prayerTimeInMinutes = hours * 60 + minutes;
-        
-        if (prayerTimeInMinutes > currentTimeInMinutes) {
-          nextPrayerIndex = i;
-          break;
-        }
-      }
-
-      // Verschiebe die nächste Gebetszeit an den Anfang
-      const nextPrayer = prayerTimes[nextPrayerIndex];
-      prayerTimes.splice(nextPrayerIndex, 1);
-      prayerTimes.unshift(nextPrayer);
       
       return {
         prayerTimes,

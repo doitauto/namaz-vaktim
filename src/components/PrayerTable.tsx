@@ -1,10 +1,9 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { ExtendedPrayerTime, TimeRange } from "@/lib/types";
-import { FileDown, FileSpreadsheet } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { useToast } from "@/components/ui/use-toast";
+import { PrayerExportButtons } from "./PrayerExportButtons";
+import { getPrayerTitle } from "@/lib/prayer-utils";
+import { usePrayerTimesQuery } from "@/hooks/usePrayerTimesQuery";
 
 interface PrayerTableProps {
   timeRange: TimeRange;
@@ -13,132 +12,12 @@ interface PrayerTableProps {
   longitude?: number;
 }
 
-const getPrayerTitle = (timeRange: TimeRange, lang: 'tr' | 'de') => {
-  if (lang === 'tr') {
-    switch (timeRange) {
-      case 'weekly':
-        return 'Haftalık Namaz Vakitleri';
-      case 'monthly':
-        return 'Aylık Namaz Vakitleri';
-      case 'yearly':
-        return 'Yıllık Namaz Vakitleri';
-    }
-  } else {
-    switch (timeRange) {
-      case 'weekly':
-        return 'Wöchentliche Gebetszeiten';
-      case 'monthly':
-        return 'Monatliche Gebetszeiten';
-      case 'yearly':
-        return 'Jährliche Gebetszeiten';
-    }
-  }
-};
-
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('de-DE');
-};
-
 export const PrayerTable = ({ timeRange, lang, latitude, longitude }: PrayerTableProps) => {
-  const { toast } = useToast();
-
-  const getDaysToFetch = () => {
-    switch (timeRange) {
-      case 'weekly':
-        return 7;
-      case 'monthly':
-        return 30;
-      case 'yearly':
-        return 365;
-      default:
-        return 7;
-    }
-  };
-
-  const { data: prayerTimes, isLoading } = useQuery({
-    queryKey: ['prayerTimes', timeRange, latitude, longitude],
-    queryFn: async () => {
-      if (!latitude || !longitude) return [];
-
-      const days = getDaysToFetch();
-      const dates = Array.from({ length: days }, (_, i) => {
-        const date = new Date();
-        date.setDate(date.getDate() + i);
-        return date;
-      });
-
-      const results = await Promise.all(
-        dates.map(async (date) => {
-          const timestamp = Math.floor(date.getTime() / 1000);
-          
-          const params = new URLSearchParams({
-            latitude: latitude.toString(),
-            longitude: longitude.toString(),
-            method: '13',
-            shafaq: 'general',
-            tune: '11,1,-7,5,-34,6,6,-7,-6',
-            school: '1',
-            midnightMode: '0',
-            timezonestring: 'Europe/Berlin',
-            latitudeAdjustmentMethod: '1',
-            calendarMethod: 'DIYANET',
-            adjustment: '1'
-          });
-
-          const response = await fetch(
-            `https://api.aladhan.com/v1/timings/${timestamp}?${params.toString()}`
-          );
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch prayer times');
-          }
-
-          const data = await response.json();
-          return {
-            date: formatDate(date.toISOString()),
-            fajr: data.data.timings.Fajr,
-            sunrise: data.data.timings.Sunrise,
-            dhuhr: data.data.timings.Dhuhr,
-            asr: data.data.timings.Asr,
-            maghrib: data.data.timings.Maghrib,
-            isha: data.data.timings.Isha
-          };
-        })
-      );
-
-      return results;
-    },
-    enabled: !!latitude && !!longitude,
-    retry: 3,
-    retryDelay: 1000
+  const { data: prayerTimes, isLoading } = usePrayerTimesQuery({ 
+    timeRange, 
+    latitude, 
+    longitude 
   });
-
-  const exportToExcel = async () => {
-    if (!prayerTimes || prayerTimes.length === 0) {
-      toast({
-        title: lang === 'tr' ? 'Hata' : 'Fehler',
-        description: lang === 'tr' ? 'Veri bulunamadı' : 'Keine Daten gefunden',
-        variant: "destructive"
-      });
-      return;
-    }
-
-    console.log('Exporting to Excel...', prayerTimes);
-  };
-
-  const exportToPDF = async () => {
-    if (!prayerTimes || prayerTimes.length === 0) {
-      toast({
-        title: lang === 'tr' ? 'Hata' : 'Fehler',
-        description: lang === 'tr' ? 'Veri bulunamadı' : 'Keine Daten gefunden',
-        variant: "destructive"
-      });
-      return;
-    }
-
-    console.log('Exporting to PDF...', prayerTimes);
-  };
 
   if (isLoading) {
     return (
@@ -182,25 +61,9 @@ export const PrayerTable = ({ timeRange, lang, latitude, longitude }: PrayerTabl
           </Table>
         </div>
 
-        <div className="flex justify-end gap-2 mt-4">
-          <Button
-            variant="outline"
-            className="bg-white/5 text-white/70 hover:text-white border-white/10"
-            onClick={exportToExcel}
-          >
-            <FileSpreadsheet className="mr-2 h-4 w-4" />
-            {lang === 'tr' ? 'Excel İndir' : 'Excel herunterladen'}
-          </Button>
-          <Button
-            variant="outline"
-            className="bg-white/5 text-white/70 hover:text-white border-white/10"
-            onClick={exportToPDF}
-          >
-            <FileDown className="mr-2 h-4 w-4" />
-            {lang === 'tr' ? 'PDF İndir' : 'PDF herunterladen'}
-          </Button>
-        </div>
+        <PrayerExportButtons prayerTimes={prayerTimes} lang={lang} />
       </div>
     </div>
   );
 };
+

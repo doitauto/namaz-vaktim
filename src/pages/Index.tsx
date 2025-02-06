@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { PrayerCard } from '@/components/PrayerCard';
@@ -109,16 +108,22 @@ const Index = () => {
           <span className="text-white/50 text-sm">Developed by A. Calhan</span>
         </div>
 
-        <div className="absolute top-0 right-0">
-          <a 
-            href="https://ditib-lonsee.de/imsakiye/index.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white px-4 py-2 rounded-xl transition-all duration-300"
+        <div className="absolute top-4 right-4">
+          <Button
+            variant="ghost" 
+            asChild
+            className="bg-white/5 hover:bg-white/10 backdrop-blur-md text-white/70 hover:text-white"
           >
-            <Link2 className="h-5 w-5" />
-            <span>IMSAKIYE</span>
-          </a>
+            <a 
+              href="https://ditib-lonsee.de/imsakiye/index.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2"
+            >
+              <Link2 className="h-5 w-5" />
+              <span>IMSAKIYE</span>
+            </a>
+          </Button>
         </div>
 
         <div className="text-center space-y-4 mt-4">

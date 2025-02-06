@@ -89,14 +89,15 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
       const nextPrayerTime = new Date();
       nextPrayerTime.setHours(parseInt(hours), parseInt(minutes), 0);
 
-      // Wenn die nächste Gebetszeit bereits vorbei ist, füge einen Tag hinzu
-      if (nextPrayerTime.getTime() < Date.now()) {
+      const now = new Date();
+      let diff = nextPrayerTime.getTime() - now.getTime();
+
+      // Wenn die Gebetszeit bereits vorbei ist, füge einen Tag hinzu
+      if (diff < 0) {
         nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
+        diff = nextPrayerTime.getTime() - now.getTime();
       }
 
-      const now = new Date();
-      const diff = nextPrayerTime.getTime() - now.getTime();
-      
       const hoursLeft = Math.floor(diff / (1000 * 60 * 60));
       const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const secondsLeft = Math.floor((diff % (1000 * 60)) / 1000);

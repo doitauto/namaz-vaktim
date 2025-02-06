@@ -4,7 +4,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import { PrayerTime } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
 
-const API_BASE_URL = "https://awqatsalah.diyanet.gov.tr/api";
+const API_BASE_URL = "https://awqatsalah.diyanet.gov.tr/api/v1";
 
 export const usePrayerTimes = (latitude?: number, longitude?: number) => {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);

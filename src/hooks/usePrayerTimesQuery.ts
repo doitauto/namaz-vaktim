@@ -35,7 +35,7 @@ interface DiyanetPrayerTimeResponse {
 }
 
 // API-Basis-URL für die Diyanet Prayer Times API
-const API_BASE_URL = "https://awqatsalah.diyanet.gov.tr/api";
+const API_BASE_URL = "https://awqatsalah.diyanet.gov.tr/api/v1";
 
 export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePrayerTimesQueryProps) => {
   const { toast } = useToast();

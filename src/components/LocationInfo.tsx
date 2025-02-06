@@ -43,9 +43,9 @@ export const LocationInfo = ({ city, hijriDate }: LocationInfoProps) => {
           <div className="text-lg font-medium text-white/80 mb-2">
             Vaktin Çıkmasına Kalan Süre
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+          <div className="text-3xl font-light tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9] mb-3">
             {timeLeft}
-          </h1>
+          </div>
           <div className="flex items-center gap-2 mt-2">
             <MapPin className="w-4 h-4 text-blue-400" />
             <span className="text-sm text-blue-300">
@@ -60,4 +60,3 @@ export const LocationInfo = ({ city, hijriDate }: LocationInfoProps) => {
     </div>
   );
 };
-

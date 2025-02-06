@@ -40,10 +40,9 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
         try {
           const batchResults = await Promise.all(
             batch.map(async (date) => {
-              // Format date as YYYY-MM-DD
               const formattedDate = date.toISOString().split('T')[0];
               
-              // Diyanet API requires coordinates in DDMM format
+              // Format coordinates for Diyanet API
               const latDeg = Math.floor(Math.abs(latitude));
               const latMin = Math.round((Math.abs(latitude) - latDeg) * 60);
               const lonDeg = Math.floor(Math.abs(longitude));
@@ -52,6 +51,8 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
               const latStr = `${latDeg.toString().padStart(2, '0')}${latMin.toString().padStart(2, '0')}N`;
               const lonStr = `${lonDeg.toString().padStart(3, '0')}${lonMin.toString().padStart(2, '0')}E`;
 
+              console.log(`Fetching prayer times for ${latStr}/${lonStr}/${formattedDate}`);
+              
               const response = await fetch(
                 `https://namazapi.diyanet.gov.tr/api/PrayerTimes/${latStr}/${lonStr}/${formattedDate}`
               );
@@ -88,7 +89,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
           }
 
           await new Promise(resolve => setTimeout(resolve, 3000));
-          i -= batchSize; // Diesen Batch erneut versuchen
+          i -= batchSize; // Retry this batch
         }
       }
 
@@ -97,7 +98,7 @@ export const usePrayerTimesQuery = ({ timeRange, latitude, longitude }: UsePraye
     enabled: !!latitude && !!longitude,
     retry: 2,
     retryDelay: (attemptIndex) => Math.min(1000 * (2 ** attemptIndex), 30000),
-    staleTime: 1000 * 60 * 60, // Cache für 1 Stunde
-    gcTime: 1000 * 60 * 60 * 24, // Im Garbage Collection für 24 Stunden behalten
+    staleTime: 1000 * 60 * 60, // Cache for 1 hour
+    gcTime: 1000 * 60 * 60 * 24, // Keep in garbage collection for 24 hours
   });
 };

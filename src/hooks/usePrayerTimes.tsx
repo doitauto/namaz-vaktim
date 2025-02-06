@@ -76,6 +76,8 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
 
       const today = new Date().toISOString().split('T')[0];
       
+      console.log(`Fetching prayer times for ${latStr}/${lonStr}/${today}`);
+      
       const response = await fetch(
         `https://namazapi.diyanet.gov.tr/api/PrayerTimes/${latStr}/${lonStr}/${today}`
       );

@@ -90,6 +90,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
       const nextPrayerTime = new Date();
       nextPrayerTime.setHours(parseInt(hours), parseInt(minutes), 0);
 
+      // Wenn die nächste Gebetszeit bereits vorbei ist, füge einen Tag hinzu
       if (nextPrayerTime.getTime() < Date.now()) {
         nextPrayerTime.setDate(nextPrayerTime.getDate() + 1);
       }
@@ -111,7 +112,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
     checkPrayerRestrictions();
 
     return () => clearInterval(timer);
-  }, [nextPrayer, prayerTimes]);
+  }, [nextPrayer]);
 
   const nextPrayerName = lang === 'tr' 
     ? getPrayerNameInTurkish(nextPrayer.name)
@@ -126,7 +127,7 @@ export const NextPrayerTimer = ({ nextPrayer, prayerTimes, className = '', lang 
       className={`text-center ${className}`}
     >
       <div className="text-lg font-medium text-white/80 mb-2">
-        {t.nextPrayer}: {nextPrayerName}
+        {t.nextPrayerLabel}
       </div>
       <div className="text-5xl font-light tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#0EA5E9] mb-3">
         {timeLeft}

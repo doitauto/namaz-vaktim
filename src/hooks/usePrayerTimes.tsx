@@ -112,7 +112,23 @@ export const usePrayerTimes = (latitude?: number, longitude?: number) => {
         const isCurrentPrayer = name === 'Asr';
         
         // Finde die nächste Gebetszeit
-        const isNext = index === prayerOrder.indexOf('Asr') + 1;
+        let isNext = false;
+        
+        // Konvertiere alle Zeiten in Minuten für den Vergleich
+        const allTimes = prayerOrder.map(pName => {
+          const pTime = formatTime(data.data.timings[pName]);
+          const [h, m] = pTime.split(':').map(Number);
+          return h * 60 + m;
+        });
+        
+        // Finde die nächste Gebetszeit
+        const currentTimeIndex = allTimes.findIndex(t => t > currentTimeInMinutes);
+        if (currentTimeIndex === -1) {
+          // Wenn keine spätere Zeit heute gefunden wurde, ist die erste Zeit des nächsten Tages die nächste
+          isNext = index === 0;
+        } else {
+          isNext = index === currentTimeIndex;
+        }
 
         return {
           name,

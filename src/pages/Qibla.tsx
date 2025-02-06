@@ -55,9 +55,11 @@ const Qibla = () => {
     getLocation();
 
     const requestPermission = async () => {
-      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      // @ts-ignore - Diese Warnung ignorieren, da die TypeScript-Definitionen nicht vollständig sind
+      if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
         try {
-          const permissionState = await DeviceOrientationEvent.requestPermission();
+          // @ts-ignore
+          const permissionState = await (DeviceOrientationEvent as any).requestPermission();
           if (permissionState === 'granted') {
             window.addEventListener('deviceorientation', handleOrientation);
           } else {
@@ -76,8 +78,10 @@ const Qibla = () => {
     };
 
     const handleOrientation = (event: DeviceOrientationEvent) => {
+      // @ts-ignore - Diese Warnung ignorieren, da die TypeScript-Definitionen nicht vollständig sind
       if (event.webkitCompassHeading) {
         // iOS devices
+        // @ts-ignore
         setDeviceOrientation(event.webkitCompassHeading);
       } else if (event.alpha !== null) {
         // Android devices
@@ -95,7 +99,9 @@ const Qibla = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1A1F2C] to-[#2C1A2F]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#8B5CF6]" />
+        <div className="glass-morphism p-8 rounded-2xl">
+          <Loader2 className="h-8 w-8 animate-spin text-[#8B5CF6]" />
+        </div>
       </div>
     );
   }
@@ -103,44 +109,45 @@ const Qibla = () => {
   const qiblaRotation = direction !== null ? direction - deviceOrientation : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] to-[#2C1A2F] px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] to-[#2C1A2F] px-4 py-8 relative overflow-hidden">
+      {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#8B5CF6] rounded-full filter blur-[128px] opacity-20"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#0EA5E9] rounded-full filter blur-[128px] opacity-20"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#8B5CF6] rounded-full filter blur-[128px] opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#0EA5E9] rounded-full filter blur-[128px] opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
       </div>
 
       <div className="max-w-2xl mx-auto relative z-10">
         <div className="text-center space-y-6">
-          <h1 className="text-4xl font-light tracking-wider text-white/90">
+          <h1 className="text-4xl font-light tracking-wider text-gradient">
             Qibla-Richtung
           </h1>
           
-          <p className="text-white/70">
+          <p className="text-white/70 glass-morphism px-6 py-3 rounded-full inline-block">
             Die Qibla zeigt die Richtung zur Kaaba in Mekka
           </p>
 
-          <div className="relative w-72 h-72 mx-auto mt-8">
+          <div className="relative w-80 h-80 mx-auto mt-8">
             {/* Kompass-Hintergrund */}
-            <div className="absolute inset-0 bg-white/5 rounded-full border-2 border-white/10 shadow-lg"></div>
+            <div className="absolute inset-0 glass-morphism rounded-full border border-white/20 shadow-[0_0_15px_rgba(139,92,246,0.3)]"></div>
             
             {/* Kaaba-Indikator */}
             <div 
-              className="absolute top-1/2 left-1/2 w-2 h-24 -ml-1 origin-bottom transform transition-transform duration-300"
+              className="absolute top-1/2 left-1/2 w-2 h-32 -ml-1 origin-bottom transform transition-transform duration-300 ease-out"
               style={{ transform: `translateY(-100%) rotate(${qiblaRotation}deg)` }}
             >
-              <div className="w-4 h-4 -ml-1 bg-[#8B5CF6] rounded-full shadow-lg"></div>
+              <div className="w-4 h-4 -ml-1 bg-gradient-to-br from-[#8B5CF6] to-[#0EA5E9] rounded-full shadow-lg shadow-[#8B5CF6]/50"></div>
               <div className="w-0.5 h-full bg-gradient-to-b from-[#8B5CF6] to-transparent mx-auto"></div>
             </div>
 
             {/* Kompass-Markierungen */}
             <div className="absolute inset-0">
-              {[0, 90, 180, 270].map((deg) => (
+              {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
                 <div
                   key={deg}
                   className="absolute top-0 left-1/2 w-0.5 h-full origin-bottom"
                   style={{ transform: `rotate(${deg}deg)` }}
                 >
-                  <div className="w-0.5 h-3 bg-white/30"></div>
+                  <div className="w-0.5 h-4 bg-white/30"></div>
                 </div>
               ))}
             </div>
@@ -155,7 +162,7 @@ const Qibla = () => {
             <Button
               variant="ghost"
               onClick={getLocation}
-              className="text-white/70 hover:text-white hover:bg-white/10"
+              className="glass-morphism text-white hover:text-white hover:bg-white/10 transition-all duration-300 transform hover:scale-105"
             >
               <Compass className="h-4 w-4 mr-2" />
               Standort aktualisieren
@@ -163,7 +170,7 @@ const Qibla = () => {
           </div>
 
           {direction !== null && (
-            <p className="text-white/70 mt-4">
+            <p className="text-white/70 mt-4 glass-morphism px-4 py-2 rounded-full inline-block">
               Qibla-Richtung: {Math.round(direction)}°
             </p>
           )}
